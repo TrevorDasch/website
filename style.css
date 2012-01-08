@@ -1,0 +1,150 @@
+body{
+	background-color: black;
+	font: 15px Courier New, Courier, monospace;
+	color: #18CAE6;
+}
+
+h1{margin:0; border:0; padding:0; font-size: 37px; font-weight: normal}
+
+h2{margin:0; border:0; padding:0; font-size: 26px; font-weight: normal}
+
+.cleardiv{float:none; clear:both;}
+
+.largecircle{
+	float: left;
+	width: 42px;
+	height: 42px;
+	margin-right: 15px;
+	background-color:#18CAE6;
+	-moz-border-radius: 21px;
+	border-radius: 21px;
+}
+
+.mediumcircle{
+	float: left;
+	width: 30px;
+	height: 30px;
+	margin-right: 10px;
+	background-color:#18CAE6;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+}
+
+.smallcircle{
+	float: left;
+	width: 20px;
+	height: 20px;
+	margin-right: 5px;
+	background-color:#18CAE6;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+}
+
+.main{
+	margin: 0 auto;
+	width: 900px;
+	-moz-border-radius: 26px;
+	border-radius: 26px;
+	border: 2px #18CAE6 solid;
+}
+
+.header{
+	float:none;
+	clear: both;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #18CAE6;
+	padding: 10px;
+}
+
+.navbar{
+	float: right;
+	vertical-align: bottom;
+}
+
+.titlebar{
+	background-color: #18CAE6;
+	-moz-border-radius: 21px;
+	border-radius: 21px;
+	color: black;
+	padding: 0px 20px 0px 20px;
+	float: left;
+	clear: right;
+}
+
+.content{
+	width: 560px;
+	float:left;
+	clear: left;
+	margin: 10px;
+}
+
+.blog{
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #18CAE6;
+}
+
+.blog_post{
+	padding: 10px;}
+
+.blog_title{
+	background-color: #18CAE6;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	color: black;
+	padding: 1px 15px 0px 15px;
+	float: left;
+	clear: right;
+}
+
+.sidebar{
+	width: 320px;
+	float: left;
+
+}
+
+.footer{
+	padding: 10px;
+	margin-top: 10px;
+	border-top: 1px solid #18CAE6;
+	float: none;
+	clear: both;
+	text-align: center;
+	font-size: 10px;
+}
+
+a, a:hover, a:active, a:visited{
+	color: white;
+	font-style: none;
+	text-decoration: none;
+	font-weight: normal;
+}
+
+
+
+.tweet_wrapper{
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	border: 1px solid #18CAE6;
+	margin: 10px;
+}
+
+.tweet_header{
+	padding: 10px;
+}
+
+.tweet_list{
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.tweet_odd{
+	border-top: 1px solid #18CAE6;
+	padding: 10px;
+}
+
+.tweet_even{
+	border-top: 1px solid #18CAE6;
+	padding: 10px;
+}
