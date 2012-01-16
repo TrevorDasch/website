@@ -55,7 +55,7 @@ function Generate(x, y){
 				count++;
 			for(var j = 0; j<=1; j++){
 				if(i!=0 || j!=0){
-					if(Current[x+j][(y+i)%height])
+					if(Current[x+j][(y+i+height)%height])
 						count++;
 				}
 			}
@@ -66,7 +66,7 @@ function Generate(x, y){
 		for(var i = -1; i<=1; i++){
 			for(var j = -1; j<=0; j++){
 				if(i!=0 || j!=0){
-					if(Current[x+j][(y+i)%height])
+					if(Current[x+j][(y+i+height)%height])
 						count++;
 				}
 			}
@@ -76,7 +76,7 @@ function Generate(x, y){
 		for(var i = -1; i<=1; i++){
 			for(var j = -1; j<=1; j++){
 				if(i!=0 || j!=0){
-					if(Current[x+j][(y+i)%height])
+					if(Current[x+j][(y+i+height)%height])
 						count++;
 				}
 			}
