@@ -1,0 +1,1 @@
+{"blogs":{"title":"First Blog Post","date":"Wed Oct 12 2011 10:54:02 GMT-0400 (Eastern Daylight Time)", "body":"<p>This is my first post on this blog! Right now my blog is powered by a static json document. Hopefully it won't take too long to build a mongodb document store to power it instead.</p>"}]}
