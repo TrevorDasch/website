@@ -59,6 +59,10 @@ h2{margin:0; border:0; padding:0; font-size: 26px; font-weight: normal}
 .navbar{
 	float: right;
 	vertical-align: bottom;
+	position: relative;
+	overflow: hidden;
+	width: 480px;
+	height: 22px;
 }
 
 .titlebar{
@@ -184,4 +188,52 @@ a, a:hover, a:active, a:visited{
 
 .current_page:visited{
 	color: black;
+}
+
+#myCanvas {
+	width: 880px;
+	height: 600px;
+	margin: 10px;
+}
+
+.home-section{
+
+}
+
+.blog-section{
+	display: none;
+}
+
+.about-section{
+	display: none;
+}
+
+.nav_link{
+	position: relative;
+	top: 2px;
+	padding-top: 1px;
+	margin-top: 2px;
+}
+
+
+.nav_link_selected, .nav_link_selected:hover, .nav_link_selected:active, .nav_link_selected:visited{
+	background-color:#18CAE6;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	color: black;
+	padding: 2px 6px 1px 6px;
+	margin-top: 2px;
+	position: relative;
+	top: 2px;
+
+}
+
+.nav_link_slider{
+	position: absolute;
+	width: 800px;
+}
+
+.nav_link_wrapper{
+	float: left;
+	width: 160px;
 }
