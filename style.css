@@ -102,6 +102,10 @@ h2{margin:0; border:0; padding:0; font-size: 26px; font-weight: normal}
 	clear: right;
 }
 
+.blog_date{
+	margin:10px;
+}
+
 .sidebar{
 	width: 320px;
 	float: left;
@@ -152,4 +156,32 @@ a, a:hover, a:active, a:visited{
 .tweet_even{
 	border-top: 1px solid #18CAE6;
 	padding: 10px;
+}
+
+
+.blognav{
+	-moz-border-radius: 15px;
+        border-radius: 15px;
+        border: 1px solid #18CAE6;
+        margin: 10px;
+	padding: 10px 17px;
+}
+
+.blogpage{
+	width: 40px;
+	height: 32px;
+	display: block;
+	text-align: center;
+	padding-top: 12px;
+}
+
+.current_page{
+	-moz-border-radius: 5px;
+        border-radius: 5px;
+	background-color: #18CAE6;
+	color: black;
+}
+
+.current_page:visited{
+	color: black;
 }

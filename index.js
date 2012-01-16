@@ -11,13 +11,13 @@ $(document).ready(function(){
 	
 	
 	CreateBlogNav();
-	LoadBLog(1);
+	LoadBlog(1);
 
 });
 
 function CreateBlogNav(){
 	$.get('blogcount.json',function(data){
-		if(data==undefined || data==null || data.success = false)
+		if(data==undefined || data==null || (data.success!=undefined && data.success == false))
 			return;
 		
 		var c = data.count;
@@ -30,13 +30,13 @@ function CreateBlogNav(){
 		
 		var navstring = '';
 		for(var i = 1; i<=c; i++){
-			if(col==5){
+			if(col==7){
 				navstring+='</tr>';
 				col = 1;
 			}
 			if(col==1)
 				navstring+='<tr>';
-			navstring+='<td><a href="#" class="blogpage ' +(i==currentPage?'current_page':'')+'" data-page="'+i+'">'+i+'</a></td>';
+			navstring+='<td><a href="#" class="blogpage ' +(i==currentPage?'current_page':'')+' bp'+i+'" data-page="'+i+'">'+i+'</a></td>';
 			col++;
 		}
 		navstring+='</tr>';
@@ -50,9 +50,9 @@ function CreateBlogNav(){
 }
 
 
-function LoadBLog(page){
+function LoadBlog(page){
 	$.get('blogs.json?page='+page,function(data){
-		if(data==undefined || data==null || data.success = false)
+		if(data==undefined || data==null || (data.success!=undefined && data.success == false))
 			return;
 		
 		$('.blog').html('');
@@ -77,5 +77,8 @@ function CreateBlogHTML(blogPost){
 
 function Paginate(){
 	var p = $(this).attr('data-page');
+	currentPage = p;
+	$('.current_page').removeClass('current_page');
+	$('.bp'+p).addClass('current_page');
 	LoadBlog(p);
 }
