@@ -24,9 +24,10 @@ function CreateBlogNav(){
 		
 		var col = 1;
 		
-		if(c==1)
+		if(c==1){
+			$('.blognav').remove();
 			return;
-		
+		}
 		
 		var navstring = '';
 		for(var i = 1; i<=c; i++){
