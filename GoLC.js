@@ -19,7 +19,7 @@ function StartGame(w,h){
 	}
 	
 	Draw();
-	setInterval(Step,600);
+	setInterval(Step,500);
 	$('#myCanvas').click(Reset);
 }
 

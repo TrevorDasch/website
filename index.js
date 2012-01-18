@@ -1,5 +1,7 @@
 var currentPage = 1;
 var currentSection = 'home';
+var currentAbout = 'resume';
+var actionActive = false;
 $(document).ready(function(){
 	
 	
@@ -7,6 +9,7 @@ $(document).ready(function(){
 	loadSection();
 
 	$('.nav_link').live('click',clickSection);
+	$('.about_link').live('click',clickAbout);
 
 	jQuery(function($){
 		$(".tweet").tweet({
@@ -101,11 +104,15 @@ function loadSection(){
 }
 
 function clickSection(){
+	if(actionActive)
+		return false;
+		
 	var cls = $(this).attr('data-section');
 	openSection(cls);
 }
 
 function openSection(sec){
+	actionActive =true;
 	switch(sec){
 	case 'about':
 		if(currentSection=='home'){
@@ -177,44 +184,127 @@ function SlideTwo(func){
 }
 
 function SlideBack(){
-	$('.nav_link_slider').css('left','0');
+	$('.nav_link_slider').css('left','-29px');
+	$('.nav_link_slider').animate({left: '0'},500);
+	$('.nav_link_wrapper').first().css('width','189px');
+	$('.nav_link_wrapper').first().animate({width:'160px'},500, 
+	function(){
+		actionActive = false;
+	});
 }
 
 function finishHome(){
-		$('.nav_link_wrapper').each(function(){
-			if(!$(this).hasClass('nav_link_home'))
-				$(this).remove();
-			else
-				return false;
-		});
-		SlideBack();
-		currentSection = 'home';
-		$('.nav_link_home').html('<div class="smallcircle"></div><a class="nav_link" data-section="home" href="#!">Home</a>');
-		$('.nav_link_home .nav_link').addClass('nav_link_selected');
+	$('.nav_link_wrapper').each(function(){
+		if(!$(this).hasClass('nav_link_home'))
+			$(this).remove();
+		else
+			return false;
+	});
+	currentSection = 'home';
+	$('.nav_link_home').html('<div class="smallcircle"></div><a class="nav_link" data-section="home" href="#!">Home</a>');
+	$('.nav_link_home .nav_link').addClass('nav_link_selected');
+	SlideBack();
 }
 
 function finishAbout(){
-		$('.nav_link_wrapper').each(function(){
-			if(!$(this).hasClass('nav_link_about'))
-				$(this).remove();
-			else
-				return false;
-		});
-		SlideBack();
-		currentSection = 'about';
-		$('.nav_link_about').html('<div class="smallcircle"></div><a class="nav_link" data-section="about" href="#!about">About</a>');
-		$('.nav_link_about .nav_link').addClass('nav_link_selected');
+	$('.nav_link_wrapper').each(function(){
+		if(!$(this).hasClass('nav_link_about'))
+			$(this).remove();
+		else
+			return false;
+	});
+	currentSection = 'about';
+	$('.nav_link_about').html('<div class="smallcircle"></div><a class="nav_link" data-section="about" href="#!about">About</a>');
+	$('.nav_link_about .nav_link').addClass('nav_link_selected');
+	SlideBack();
 }
 
 function finishBlog(){
-		$('.nav_link_wrapper').each(function(){
-			if(!$(this).hasClass('nav_link_blog'))
-				$(this).remove();
-			else
-				return false;
-		});		
-		SlideBack();
-		currentSection = 'blog';
-		$('.nav_link_blog').html('<div class="smallcircle"></div><a class="nav_link" data-section="blog" href="#!blog">Blog</a>');
-		$('.nav_link_blog .nav_link').addClass('nav_link_selected');
+	$('.nav_link_wrapper').each(function(){
+		if(!$(this).hasClass('nav_link_blog'))
+			$(this).remove();
+		else
+			return false;
+	});		
+	currentSection = 'blog';
+	$('.nav_link_blog').html('<div class="smallcircle"></div><a class="nav_link" data-section="blog" href="#!blog">Blog</a>');
+	$('.nav_link_blog .nav_link').addClass('nav_link_selected');
+	SlideBack();
+}
+
+
+
+function clickAbout(){
+	if(actionActive)
+		return false;
+	actionActive = true;
+		
+	var cls = $(this).attr('data-section');
+	
+	
+	if(cls== 'about'){
+		if(currentAbout=='resume'){
+			$('.about_link_slider').append('<div class="about_link_wrapper about_link_resume"><h2><a class="about_link" data-section="resume" href="#!about">Resume</a></h2></div>');
+			SlideOneAbout(finishAboutAbout);
+		}
+		else{
+			finishAboutAbout();
+		}
+		
+		$('.about_body').show('slow');
+		$('.resume_body').hide('slow');
+		
+	}else{
+		if(currentAbout=='about'){
+			$('.about_link_slider').append('<div class="about_link_wrapper about_link_about"><h2><a class="about_link" data-section="about" href="#!about">About Me</a></h2></div>');
+			SlideOneAbout(finishAboutResume);
+		}
+		else{
+			finishAboutResume();
+		}
+		$('.about_body').hide('slow');
+		$('.resume_body').show('slow');
+		
+	}
+}
+
+function SlideOneAbout(func){
+	$('.about_link_slider').animate({left: '-=440px'},1000,func);
+}
+function SlideBackAbout(){
+	$('.about_link_slider').css('left','-53px');
+	$('.about_link_slider').animate({left: '0'},500);
+	$('.about_link_wrapper').first().css('width','493px');
+	$('.about_link_wrapper').first().animate({width:'440px'},500,
+		function(){
+			actionActive = false;
+		});
+}
+
+function finishAboutAbout(){
+	$('.about_link_wrapper').each(function(){
+		if(!$(this).hasClass('about_link_about'))
+			$(this).remove();
+		else
+			return false;
+	});
+	
+	currentAbout = 'about';
+	$('.about_link_about').html('<div class="mediumcircle"></div><h2><a class="about_link" data-section="about" href="#!about">About Me</a></h2>');
+	$('.about_link_about .about_link').addClass('about_link_selected');
+	SlideBackAbout();
+}
+
+function finishAboutResume(){
+	$('.about_link_wrapper').each(function(){
+		if(!$(this).hasClass('about_link_resume'))
+			$(this).remove();
+		else
+			return false;
+	});
+	
+	currentAbout = 'resume';
+	$('.about_link_resume').html('<div class="mediumcircle"></div><h2><a class="about_link" data-section="resume" href="#!about">Resume</a></h2>');
+	$('.about_link_resume .about_link').addClass('about_link_selected');
+	SlideBackAbout();
 }

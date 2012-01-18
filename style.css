@@ -131,8 +131,12 @@ a, a:hover, a:active, a:visited{
 	font-style: none;
 	text-decoration: none;
 	font-weight: normal;
+	outline: none;
 }
 
+a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
+    outline: none;
+}
 
 
 .tweet_wrapper{
@@ -236,4 +240,42 @@ a, a:hover, a:active, a:visited{
 .nav_link_wrapper{
 	float: left;
 	width: 160px;
+}
+
+.about_body{
+	display: none;
+}
+
+.resume_body{
+}
+
+.about_link{
+	position: relative;
+}
+
+
+.about_link_selected, .about_link_selected:hover, .about_link_selected:active, .about_link_selected:visited{
+	background-color: #18CAE6;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	color: black;
+	padding: 1px 15px 0px 15px;
+	float: left;
+
+}
+
+.aboutbar{
+	position: relative;
+	width: 880;
+	height: 40px;
+	overflow: hidden;
+}
+.about_link_slider{
+	position: absolute;
+	width: 1320px;
+}
+
+.about_link_wrapper{
+	float: left;
+	width: 440px;
 }
