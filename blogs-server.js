@@ -137,11 +137,11 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	});
 
 	app.get('/',function(req,res){
-		res.sendfile('/home/trevor/Git/website/index.html');
+		res.sendfile(__dirname+'/public/index.html');
 	});
 
 	app.get('/*',function(req,res){
-		res.sendfile('/home/trevor/Git/website/'+req.params[0]);	
+		res.sendfile(__dirname+'/public/'+req.params[0]);	
 	});
 	
 	
