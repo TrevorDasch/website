@@ -279,3 +279,17 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 	float: left;
 	width: 440px;
 }
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: black;
+}
+
+
+::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    background-color: #18CAE6;
+}

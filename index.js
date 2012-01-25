@@ -1,7 +1,12 @@
 var currentPage = 1;
+var currentBlog = null;
+
 var currentSection = 'home';
 var currentAbout = 'resume';
 var actionActive = false;
+
+var blogUrl = "http://localhost";
+
 $(document).ready(function(){
 	
 	
@@ -27,15 +32,15 @@ $(document).ready(function(){
 });
 
 function CreateBlogNav(){
-	$.get('blogcount.json',function(data){
-		if(data==undefined || data==null || (data.success!=undefined && data.success == false))
+	$.get(blogUrl+'/count',function(data){
+		if(data==undefined || data==null || !data.error)
 			return;
 		
 		var c = data.count;
 		
 		var col = 1;
 		
-		if(c==1){
+		if(c<=1){
 			$('.blognav').remove();
 			return;
 		}
@@ -58,31 +63,33 @@ function CreateBlogNav(){
 		for(var i = 1; i<=c; i++){
 			$('.blogpage').on('click',Paginate);
 		}
+		
 	});
 }
 
 
 function LoadBlog(page){
-	$.get('blogs.json?page='+page,function(data){
-		if(data==undefined || data==null || (data.success!=undefined && data.success == false))
+	$.get(blogUrl+'/blog/'+page,function(data){
+		if(data==undefined || data==null || !data.error){
+			
+		$('.blog').html("No blogs are available");	
 			return;
-		
-		$('.blog').html('');
-		for(var b in data.blogs){
-			$('.blog').append(CreateBlogHTML(data.blogs[b]));
 		}
 		
+		$('.blog').html(CreateBlogHTML(data));
+		
+		currentBlog = data;
 		
 	});
 }
 
 
 function CreateBlogHTML(blogPost){
-	var htmlstring = '<div class="blog_post"><div class="mediumcircle"></div>';
+	var htmlstring = '<div class="blog_post" data-blog="'+blogPost["_id"]+'"><div class="mediumcircle"></div>';
 		
 	htmlstring += '<div class="blog_title"><h2>'+blogPost.title+'</h2></div><div class="cleardiv"></div>';
 	htmlstring += '<div class="blog_date">'+blogPost.date+'</div>';
-	htmlstring += '<div class="blog_body">'+ blogPost.body + '</div></div>';
+	htmlstring += '<div class="blog_body">'+ blogPost.html + '</div></div>';
 
 	return htmlstring;
 }

@@ -1,12 +1,12 @@
 var COMMENT_DIV = ".comments";
-var APIURL = 'localhost:3000';
+var APIURL = 'http://localhost:3000';
 
 
 var current_page = 1;
 var max_page = 1;
 
 
-function loadComments(article, page){
+function loadComments(article, page, comment_div){
 	var commentList = {};
 	if(!page)
 		page = 1;
@@ -57,7 +57,7 @@ function loadComments(article, page){
 		}
 		
 		populateCommentList(data);
-		$(DIV_COMMENT).append('<div class="comment_list"></div>');
+		$(comment_div).append('<div class="comment_list"></div>');
 		display(null,data,7,'.comment_list');
 		
 		$('.show-more').live('click',function(){
