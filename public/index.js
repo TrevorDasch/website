@@ -5,7 +5,7 @@ var currentSection = 'home';
 var currentAbout = 'resume';
 var actionActive = false;
 
-var blogUrl = "http://localhost";
+var blogUrl = "http://"+document.domain;
 
 $(document).ready(function(){
 	
@@ -26,14 +26,18 @@ $(document).ready(function(){
 	
 	StartGame(16,20);
 	
+	
+	createLoginRegisterBox('.identity');
+	
 	CreateBlogNav();
 	LoadBlog(1);
 
 });
 
 function CreateBlogNav(){
-	$.get(blogUrl+'/count',function(data){
-		if(data==undefined || data==null || !data.error)
+	$.ajax({type:"GET",url:blogUrl+'/count',  success: function(data){
+	
+		if(!data || data.error)
 			return;
 		
 		var c = data.count;
@@ -64,15 +68,18 @@ function CreateBlogNav(){
 			$('.blogpage').on('click',Paginate);
 		}
 		
-	});
+	},error:function(){
+		$('.blognav').remove();
+		
+	}});
 }
 
 
 function LoadBlog(page){
-	$.get(blogUrl+'/blog/'+page,function(data){
-		if(data==undefined || data==null || !data.error){
+	$.ajax({type:"GET",url:blogUrl+'/blog/'+page, success: function(data){
+		if(!data || data.error){
 			
-		$('.blog').html("No blogs are available");	
+		$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
 			return;
 		}
 		
@@ -80,7 +87,10 @@ function LoadBlog(page){
 		
 		currentBlog = data;
 		
-	});
+	}, error:function(){
+		$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
+		return;
+	}});
 }
 
 
@@ -88,7 +98,7 @@ function CreateBlogHTML(blogPost){
 	var htmlstring = '<div class="blog_post" data-blog="'+blogPost["_id"]+'"><div class="mediumcircle"></div>';
 		
 	htmlstring += '<div class="blog_title"><h2>'+blogPost.title+'</h2></div><div class="cleardiv"></div>';
-	htmlstring += '<div class="blog_date">'+blogPost.date+'</div>';
+	htmlstring += '<div class="blog_date">'+new Date(Date.parse(blogPost.date))+'</div>';
 	htmlstring += '<div class="blog_body">'+ blogPost.html + '</div></div>';
 
 	return htmlstring;

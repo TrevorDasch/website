@@ -1,7 +1,7 @@
-var KEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ\
-		  fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+var KEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
+		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
 
-var IDENTITYSERVER = {"host":"http://localhost", "port":4000};
+var IDENTITYSERVER = {"host":"127.0.0.1", "port":4000};
 
 
 var PAGESIZE = 7;
@@ -51,6 +51,15 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 	var app = express.createServer();
 	
 	app.use(express.bodyParser());
+	
+	app.all("/*", function(req,res,next){
+		var origin = req.header("Origin");
+		if(origin)
+			res.header("Access-Control-Allow-Origin",origin);
+		res.header("Access-Control-Allow-Headers","Content-Type");
+		res.contentType("application/json");
+		next();
+	});
 	
 	app.get('/comments/:article/:page?', function(req, res){
 		

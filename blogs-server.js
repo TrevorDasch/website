@@ -1,7 +1,7 @@
-var KEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ\
-		  fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+var KEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
+		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
 
-var IDENTITYSERVER = {"host":"http://localhost", "port":4000};
+var IDENTITYSERVER = {"host":"127.0.0.1", "port":4000};
 
 
 var http = require('http');
@@ -20,10 +20,12 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 			res.on('data', function(data) {
 				user+=data;
 			}).on('end', function() {
+				//console.log(user);
 				callback(null, JSON.parse(user));
         });
 				
 		}).on('error',function(e){
+			//console.log(e);
 			callback(e, null);
 		});
 	}
@@ -32,12 +34,17 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	
 	app.use(express.bodyParser());
 	
-	app.all('/*',function(req,res,next){
-		res.contentType('application/json');
+	app.all("/*", function(req,res,next){
+		var origin = req.header("Origin");
+		if(origin)
+			res.header("Access-Control-Allow-Origin",origin);
+		res.header("Access-Control-Allow-Headers","Content-Type");
 		next();
 	});
 	
 	app.get('/blog/:page?', function(req, res){
+		
+		res.contentType('application/json');
 		
 		var page = 1;
 		if(req.params.page)
@@ -55,6 +62,9 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	});
 	
 	app.get('/count', function(req, res){
+		
+		res.contentType('application/json');
+		
 		var blogs = new mongodb.Collection(client, 'blogs');
 			
 		blogs.count(function(err,count){
@@ -64,9 +74,12 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	});
 	
 	app.post('/blog',function(req, res){
+		
+		res.contentType('application/json');
+		
 		validateUser(req.header("Authorization"),function(err,user){
-			if(err || user.admin == true){
-				res.send('{"error":"invalid user"}',401);
+			if(err || !user.admin){
+				res.send('{"error":"requires admin to post"}',401);
 				return;
 			}
 			var blogs = new mongodb.Collection(client, 'blogs');
@@ -99,6 +112,9 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	});
 	
 	app.put('/blog/:id',function(req, res){
+		
+		res.contentType('application/json');
+		
 		validateUser(req.header("Authorization"),function(err,user){
 			if(err || user.admin = true){
 				res.send('{"error":"invalid user"}',401);
@@ -137,10 +153,13 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	});
 
 	app.get('/',function(req,res){
+		//console.log("get /");
+		res.contentType("index.html");
 		res.sendfile(__dirname+'/public/index.html');
 	});
 
 	app.get('/*',function(req,res){
+		res.contentType(req.params[0]);
 		res.sendfile(__dirname+'/public/'+req.params[0]);	
 	});
 	

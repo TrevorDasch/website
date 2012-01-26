@@ -166,6 +166,13 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 	padding: 10px;
 }
 
+.identity{
+	-moz-border-radius: 15px;
+        border-radius: 15px;
+        border: 1px solid #18CAE6;
+        margin: 10px;
+	padding: 10px 10px;
+}
 
 .blognav{
 	-moz-border-radius: 15px;

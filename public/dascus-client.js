@@ -1,5 +1,5 @@
 var COMMENT_DIV = ".comments";
-var APIURL = 'http://localhost:3000';
+var APIURL = "http://"+document.domain+':3000';
 
 
 var current_page = 1;
@@ -10,7 +10,7 @@ function loadComments(article, page, comment_div){
 	var commentList = {};
 	if(!page)
 		page = 1;
-	$.get(APIURL+'/comments/'+article+'/'+page, function(data){
+	$.ajax(APIURL+'/comments/'+article+'/'+page,'success':function(data){
 		
 		function populateCommentList(comments){
 			for(var c in comments){
@@ -90,6 +90,6 @@ function loadComments(article, page, comment_div){
 			return false;
 		});
 		
-	});
+	}});
 	
 }

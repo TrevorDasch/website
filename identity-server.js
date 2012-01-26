@@ -1,5 +1,9 @@
-var KEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ\
-		  fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+var SERVERKEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
+		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+
+var CRYPTOKEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
+		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+
 
 var RANKS = [
 	{score: 0, value: 1},
@@ -15,19 +19,78 @@ var RANKS = [
 
 var express = require('express');
 var mongodb = require('mongodb');
+var crypto = require('crypto');
+
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
 
 new mongodb.Db('identity', server, {}).open(function (error, client) {
 	if(error) throw error;
+	
+	
+	function encrypt(data){
+		//console.log('Original cleartext: ' + data);
+		var algorithm = 'aes-128-cbc';
+		var key = CRYPTOKEY;
+		var clearEncoding = 'utf8';
+		var cipherEncoding = 'hex';
+		//If the next line is uncommented, the final cleartext is wrong.
+		//cipherEncoding = 'base64';
+		var cipher = crypto.createCipher(algorithm, key);
+		var cipherChunks = [];
+		cipherChunks.push(cipher.update(data, clearEncoding, cipherEncoding));
+		cipherChunks.push(cipher.final(cipherEncoding));
+		//console.log(cipherEncoding + ' ciphertext: ' + cipherChunks.join(''));
+		
+		return cipherChunks.join('-');
+	}
+    
+    function decrypt(cypherdata){
+		
+		var cipherChunks = cypherdata.split('-');
+		
+		var algorithm = 'aes-128-cbc';
+		var key = CRYPTOKEY;
+		var clearEncoding = 'utf8';
+		var cipherEncoding = 'hex';
+
+		var decipher = crypto.createDecipher(algorithm, key);
+		var plainChunks = [];
+		for (var i = 0;i < cipherChunks.length;i++) {
+		  plainChunks.push(decipher.update(cipherChunks[i], cipherEncoding, clearEncoding));
+
+		}
+		plainChunks.push(decipher.final(clearEncoding));
+		//console.log("UTF8 plaintext deciphered: " + plainChunks.join(''));
+		
+		return plainChunks.join('');
+	}
+	
+	function md5(str){
+		return crypto.
+			createHash('md5').
+			update(str).
+			digest("hex");
+	}
+	
+	
 			
 	var app = express.createServer();
 	
 	app.use(express.bodyParser());
 	
+	app.all("/*", function(req,res,next){
+		var origin = req.header("Origin");
+		if(origin)
+			res.header("Access-Control-Allow-Origin",origin);
+		res.header("Access-Control-Allow-Headers","Content-Type");
+		res.contentType("application/json");
+		next();
+	});
+	
 	app.get("/updatescore/:username/:val/:key",function(req,res){
-		if(req.params.key==KEY){
+		if(req.params.key==SERVERKEY){
 			var users = new mongodb.Collection(client, 'users');
 			var username = req.params.username;
 			var val = req.params.val;
@@ -50,8 +113,12 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 	
 	
 	app.post("/login",function(req,res){
+		console.log(req.body);
+		
 		var username = req.body.username;
 		var password = req.body.password;
+		
+		
 		if(!username || !password){
 			res.send('{"error":"invalid name or password"}',400);
 			return;
@@ -59,14 +126,13 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		
 		var users = new mongodb.Collection(client, 'users');
 		
-		users.findOne({name: username},function(err,docs){
-			if(err || docs.length == 0){
+		users.findOne({name: username},function(err,user){
+			if(err || !user){
 				res.send('{"error":"invalid name or password"}',400);
 				return;
 			}
-			
-			if( password == user.password)
-				res.send('{"token":"'+user["_id"]+'"}');
+			if( md5(password) == user.password)
+				res.send('{"token":"'+encrypt(user["_id"].toString())+'","admin":'+(user.admin?'true':'false')+'}');
 			else{
 				res.send('{"error":"invalid name or password"}',400);
 			}			
@@ -79,10 +145,23 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		var email = req.body.email;
 		var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 		
+		//console.log(req.body);
+		
 		if(!username || !password){
 			res.send('{"error":"invalid name or password"}',400);
 			return;
 		}
+		if(username.length<5){
+			res.send('{"error":"username too short"}',400);
+			return;
+		}
+
+		if(password.length<5){
+			res.send('{"error":"password too short"}',400);
+			return;
+		}
+		
+		
 		if( !email || !re.test(email)){
 			res.send('{"error":"invalid email address"}',400);
 			return;
@@ -93,7 +172,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		users.findOne({name: username},function(err,doc){
 			if(err || !doc){
 				users.insert({"name":username,
-							  "password":password,
+							  "password":md5(password),
 							  "email":email,
 							  "score":0,
 							  "rank":0,
@@ -101,7 +180,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 					if(err || docs.length == 0)
 						res.send('{"error":"something bad happened"}',500);
 					else
-						res.send('{"token":"'+docs[0]["_id"]+'"}');
+						res.send('{"token":"'+encrypt(docs[0]["_id"].toString())+'"}');
 				});
 			}
 			else{
@@ -111,12 +190,15 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 	});
 	
 	app.get("/validate/:token/:key",function(req, res){
-		if(req.params.key==KEY){
+		//console.log("validating");
+		//console.log(req.params.key);
+		//console.log(req.params.token);
+		if(req.params.key==SERVERKEY){
 			var token = req.params.token;
 			var users = new mongodb.Collection(client, 'users');
 
 			//replace with crypto
-			var id = new mongodb.ObjectID(token);
+			var id = new mongodb.ObjectID(decrypt(token));
 			users.findOne({"_id":id},function(err,doc){
 				res.send(doc);
 			});
