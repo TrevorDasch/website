@@ -136,5 +136,8 @@ function createWelcomeLogoutBox(domloc){
 		username = null;
 		token = null;
 		setCookie("token","",-1);
+		
+		createLoginRegisterBox(domloc);
+		return false;
 	});
 }
