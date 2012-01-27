@@ -29,8 +29,30 @@ $(document).ready(function(){
 	
 	createLoginRegisterBox('.identity');
 	
+	
+	
+	
 	CreateBlogNav();
 	LoadBlog(1);
+	
+	if(admin){
+		$('.new_blog_link_spot').html('<a href="#" class="new_blog_link">Create a new blog entry</a>');
+	}
+
+	$('.new_blog_link').live('click',function(){
+		createNewBlog();
+		return false;
+	});
+		
+	$('.edit_blog_link').live('click',function(){
+		createEditBlog();
+		return false;
+	});
+	
+	
+	$('.cancel_login_register').live('click',function(){	
+		createLoginRegisterBox('.identity');	
+	});
 
 });
 
@@ -97,7 +119,11 @@ function LoadBlog(page){
 function CreateBlogHTML(blogPost){
 	var htmlstring = '<div class="blog_post" data-blog="'+blogPost["_id"]+'"><div class="mediumcircle"></div>';
 		
-	htmlstring += '<div class="blog_title"><h2>'+blogPost.title+'</h2></div><div class="cleardiv"></div>';
+	htmlstring += '<div class="blog_title"><h2>'+blogPost.title+'</h2></div><div class="blog_edit_link_spot">'
+	if(admin) 
+		htmlstring+='<a class="edit_blog_link" href="#!blog">edit</a>';
+	
+	htmlstring += '</div><div class="cleardiv"></div>';
 	htmlstring += '<div class="blog_date">'+new Date(Date.parse(blogPost.date))+'</div>';
 	htmlstring += '<div class="blog_body">'+ blogPost.html + '</div></div>';
 
@@ -325,3 +351,135 @@ function finishAboutResume(){
 	$('.about_link_resume .about_link').addClass('about_link_selected');
 	SlideBackAbout();
 }
+
+
+function createEditBlog(){
+	if(!currentBlog){
+		createNewBlog();
+		return;
+	}
+	
+	var blogPost = currentBlog;
+	
+	var htmlstring = '<div class="blog_warning"></div><form method="POST" target="#" class="edit_blog_post" data-blog="'+blogPost["_id"]+'">';
+		
+	htmlstring += '<input type="textfield" class="blog_title_field" maxlength=100/>';
+	htmlstring += '<textarea class="blog_body_area" maxlength=3000/>';
+	htmlstring += '<input type="submit" class="edit_blog_submit" value="Save Changes">';
+	htmlstring += '<input type="button" class="edit_blog_cancel" value="Cancel">';
+	htmlstring+= '<div class="cleardiv"></div></form>';
+
+	$('.blog').html(htmlstring);
+	$('.blog_body_area').val(blogPost.text);
+	$('.blog_title_field').val(blogPost.title);
+	
+	$('.edit_blog_post').submit(function(e){
+		console.log(e);
+		
+		
+		var title = $('.blog_title_field').val();
+		var text = $('.blog_body_area').val();
+		if(!title){
+			$('.blog_warning').html('<span class="warning_text">Blogs require a title</span>');
+			return false;
+		}
+		if(!text){
+			$('.blog_warning').html('<span class="warning_text">Blogs require a body</span>');
+			return false;			
+		}
+		
+		$.ajax(blogUrl+"/blog/"+currentBlog["_id"],{type:'put',headers:{"Authorization":token},contentType:'application/json', data:JSON.stringify({text:text,title:title}), success: function(data){
+			if(!data || data.error){
+				$('.blog_warning').html('<span class="warning_text">'+data.error+'</span>');
+				return;
+			}
+			currentPage = 1;
+			currentBlog = data;
+			$('.blog').html(CreateBlogHTML(data));
+			
+		}, error:function(jqxhr){
+			//console.log(jqxhr);
+			if(jqxhr.responseText){
+				var resp = JSON.parse(jqxhr.responseText);
+				if(resp && resp.error){
+					$('.blog_warning').html('<span class="warning_text">'+resp.error+'</span>');
+				}
+			}
+		}});
+		
+		return false;
+	});
+	
+	$('.edit_blog_cancel').click(function(){
+		var answer = confirm("No changes will be saved. Are you sure you want to cancel?");
+		if(answer){
+			$('.blog').html(CreateBlogHTML(currentBlog));
+		}
+	});
+}
+
+
+function createNewBlog(){
+	var htmlstring = '<div class="blog_warning"></div><form method="POST" target="#" class="new_blog_post">';
+		
+	htmlstring += '<input type="textfield" class="blog_title_field" maxlength=100/>';
+	htmlstring += '<textarea class="blog_body_area" maxlength=3000/>';
+	htmlstring += '<input type="submit" class="new_blog_submit" value="Save New Blog">';
+	htmlstring += '<input type="button" class="new_blog_cancel" value="Cancel">';
+		htmlstring+= '<div class="cleardiv"></div></form>';
+
+	$('.blog').html(htmlstring);
+	
+	$('.new_blog_post').submit(function(){
+		var title = $('.blog_title_field').val();
+		var text = $('.blog_body_area').val();
+		if(!title){
+			$('.blog_warning').html('<span class="warning_text">Blogs require a title</span>');
+			return false;
+		}
+		if(!text){
+			$('.blog_warning').html('<span class="warning_text">Blogs require a body</span>');
+			return false;			
+		}
+		
+		$.ajax(blogUrl+"/blog",{type:'post',headers:{"Authorization":token},contentType:'application/json', data:JSON.stringify({text:text,title:title}), success: function(data){
+			if(!data || data.error){
+				$('.blog_warning').html('<span class="warning_text">'+data.error+'</span>');
+				return;
+			}
+			currentPage = 1;
+			currentBlog = data;
+			$('.blog').html(CreateBlogHTML(data));
+			CreateBlogNav();
+		}, error:function(jqxhr){
+			//console.log(jqxhr);
+			if(jqxhr.responseText){
+				var resp = JSON.parse(jqxhr.responseText);
+				if(resp && resp.error){
+					$('.blog_warning').html('<span class="warning_text">'+resp.error+'</span>');
+				}
+			}
+		}});
+		
+		return false;
+	});
+	
+	$('.new_blog_cancel').click(function(){
+		var answer = confirm("This blog will not be saved. Are you sure you want to cancel?");
+		if(answer){
+			$('.blog').html(CreateBlogHTML(currentBlog));
+		}
+	});
+}
+
+function createAdminPage(){
+	$('.blog_edit_link_spot').html('<a class="edit_blog_link" href="#!blog">edit</a>');
+	$('.new_blog_link_spot').html('<a href="#" class="new_blog_link">Create a new blog entry</a>');
+}
+
+function removeAdminPage(){
+	$('.blog_edit_link_spot').html('');
+	$('.new_blog_link_spot').html('');
+	$('.blog').html(CreateBlogHTML(currentBlog));
+}
+

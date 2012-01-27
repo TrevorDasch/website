@@ -20,7 +20,6 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 			res.on('data', function(data) {
 				user+=data;
 			}).on('end', function() {
-				//console.log(user);
 				callback(null, JSON.parse(user));
         });
 				
@@ -42,6 +41,11 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		next();
 	});
 	
+	
+	app.get('/monit', function(req,res){
+		res.send('{"success":true}');
+	});
+	
 	app.get('/blog/:page?', function(req, res){
 		
 		res.contentType('application/json');
@@ -51,7 +55,7 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 			page = req.params.page;
 		var blogs = new mongodb.Collection(client, 'blogs');
 			
-		blogs.find().sort({date:-1}).skip(page).limit(1).toArray(function(err,docs){
+		blogs.find().sort({date:-1}).skip(page-1).limit(1).toArray(function(err,docs){
 			if(err || docs.length==0)
 				res.send('{"error":"no blog found on this page"}',400);
 			else
@@ -116,20 +120,20 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		res.contentType('application/json');
 		
 		validateUser(req.header("Authorization"),function(err,user){
-			if(err || user.admin = true){
+			if(err || !user.admin){
 				res.send('{"error":"invalid user"}',401);
 				return;
 			}
 			
 			var blogs = new mongodb.Collection(client, 'blogs');
 
-			blogs.findOne({"_id":new mongodb.ObjectID(req.params.id)},function(err,docs){
-				if(err || docs.length==0){
+			blogs.findOne({"_id":new mongodb.ObjectID(req.params.id)},function(err,doc){
+				if(err ||!doc){
 					res.send('{"error":"invalid blog"}',400);
 					return;
 				}
 				
-				var blogPost = docs[0];
+				var blogPost = doc;
 				
 				var title = req.body.title;
 				var text = req.body.text;
@@ -141,11 +145,12 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 					blogPost.html = bbReplace(text);
 				}
 				
-				blogs.update({"_id":new mongodb.ObjectID(req.params.id)},blogPost,{safe: true},function(err,docs){
-					if(err || docs.length==0)
-						res.send('{"error":"???"}',500);
-					else
-						res.send(docs[0]);				
+				blogs.update({"_id":new mongodb.ObjectID(req.params.id)},blogPost,{safe: true},function(err){
+					if(err)
+						res.send('{"error":"failed to update blog"}',500);
+					else{
+						res.send(blogPost);
+					}
 				});
 			});
 		
@@ -172,7 +177,7 @@ function bbReplace(str){
 
 	str = str.replace(/</g,'&lt;');
 	str = str.replace(/>/g,'&gt;');
-
+	str = str.replace(/\n/g,'<br/>');
 
 	var bb, htmls, htmle;
 

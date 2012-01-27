@@ -1,0 +1,10 @@
+#!monit
+set logfile /var/log/monit.log
+
+check process nodejs with pidfile "/var/run/dascus.pid"
+    start program = "/sbin/start dascus"
+    stop program  = "/sbin/stop dascus"
+    if failed port 3000 protocol HTTP
+        request /monit
+        with timeout 10 seconds
+        then restart

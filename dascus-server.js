@@ -61,6 +61,10 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		next();
 	});
 	
+	app.get('/monit', function(req,res){
+		res.send('{"success":true}');
+	});
+	
 	app.get('/comments/:article/:page?', function(req, res){
 		
 		var page = 1;

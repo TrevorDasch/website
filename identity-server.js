@@ -47,6 +47,8 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 	}
     
     function decrypt(cypherdata){
+		if(!cypherdata || cypherdata =="")
+			return null;
 		
 		var cipherChunks = cypherdata.split('-');
 		
@@ -89,21 +91,29 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		next();
 	});
 	
+	app.get('/monit', function(req,res){
+		res.send('{"success":true}');
+	});
+	
 	app.get("/updatescore/:username/:val/:key",function(req,res){
 		if(req.params.key==SERVERKEY){
 			var users = new mongodb.Collection(client, 'users');
 			var username = req.params.username;
 			var val = req.params.val;
 		
-			users.update({"name":username},{"$inc":{"score":val}},{"safe":true},function(err,docs){
-				if(err || docs.length==0)
-					return
-				if(docs[0].rank == RANKS.length-1)
+			users.findOne({"name":username},function(err,doc){
+				if(err || !doc){
+					res.send('{"error":"no user with that username"}',400);
 					return;
-				if(docs[0].score > RANKS[docs[0].rank+1].score)
-					users.update({"name":username},{"$inc":{"rank":1}});
+				}
+				
+				if(doc.rank < RANKS.length-1 && doc.score > RANKS[doc.rank+1].score)
+					users.update(doc,{"$inc":{"score":val},"$inc":{"rank":1}});	
+				else
+					users.update(doc,{"$inc":{"score":val}});
+				
+				res.send('{"success":true}');
 			});
-			res.send('{"success":true}');
 		}
 		else{
 			res.send('{"error":"unauthorized"}',401);
@@ -113,7 +123,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 	
 	
 	app.post("/login",function(req,res){
-		console.log(req.body);
+		//console.log(req.body);
 		
 		var username = req.body.username;
 		var password = req.body.password;
@@ -197,8 +207,14 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 			var token = req.params.token;
 			var users = new mongodb.Collection(client, 'users');
 
+			var dectok = decrypt(token);
+			if(!dectok){
+				res.send('{"error":"unauthorized"}',401);
+				return;
+			}
+				
 			//replace with crypto
-			var id = new mongodb.ObjectID(decrypt(token));
+			var id = new mongodb.ObjectID(dectok);
 			users.findOne({"_id":id},function(err,doc){
 				res.send(doc);
 			});
