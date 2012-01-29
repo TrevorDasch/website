@@ -116,7 +116,7 @@ function createLoginRegisterBox(domloc){
 				
 				$.ajax(loginUrl+'/register',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"username":username,"password":password,"email":email}),'success':function(data){
 					token = data.token;
-					setCookie("token",token,30);
+					setCookie("token",token+"&"+username,30);
 					
 					createWelcomeLogoutBox(domloc);
 					

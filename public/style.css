@@ -367,3 +367,74 @@ input[type=button],input[type=submit]{
 	float: right;
 }
 
+.new_comment {}
+
+.comment_wrapper{
+	border-top: 2px solid #18CAE6;
+		  
+}
+
+.comment{ 
+	margin: 10px 0px;
+	padding: 5px 0px 5px 20px;
+	border-top: 1px solid #18CAE6;
+}
+
+.comment .comment .comment .comment .comment{
+	margin: 5px 0px;
+	padding: 5px 0px;
+}
+
+.comment-author{
+	margin: 5px 20px 5px 0px;
+	font-size: 20px;
+	float: left;
+}
+
+.comment-date{
+	margin: 0px 30px;
+}
+
+.comment-text{
+	margin: 10px;
+	clear: both;
+}
+
+.reply{
+	margin: 0px 10px;
+	float: right;
+	display: block;
+}
+
+.comment-rating{
+	margin: 0px 10px;
+	font-size: 14px;
+}
+
+.comment-rating-links{
+	margin: 0px 10px 0px 30px;
+}
+
+.comment-flag{
+	float: right;
+	color:black;
+}
+.comment-flag:visited, .comment-flag:active {
+	color:black;
+}
+.comment-flag:hover {
+	color:white;
+}
+.comment_header{
+	margin: 10px 10px 0px 10px;
+}
+
+.new_comment{
+	margin: 10px;
+}
+
+.comment_text_area{
+	width: 100%;
+	height: 100px;
+	margin: 10px 0px;
+}

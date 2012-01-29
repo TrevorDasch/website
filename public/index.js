@@ -86,9 +86,9 @@ function CreateBlogNav(){
 		
 		$('.blognav').html('<table>'+navstring+'</table>');
 		
-		for(var i = 1; i<=c; i++){
-			$('.blogpage').on('click',Paginate);
-		}
+		
+		$('.blogpage').on('click',Paginate);
+		
 		
 	},error:function(){
 		$('.blognav').remove();
@@ -109,6 +109,8 @@ function LoadBlog(page){
 		
 		currentBlog = data;
 		
+		loadCommentSection(currentBlog["_id"]);
+		
 	}, error:function(){
 		$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
 		return;
@@ -124,9 +126,10 @@ function CreateBlogHTML(blogPost){
 		htmlstring+='<a class="edit_blog_link" href="#!blog">edit</a>';
 	
 	htmlstring += '</div><div class="cleardiv"></div>';
-	htmlstring += '<div class="blog_date">'+new Date(Date.parse(blogPost.date))+'</div>';
+	htmlstring += '<div class="blog_date">'+howLongAgoString(Date.parse(blogPost.date))+'</div>';
 	htmlstring += '<div class="blog_body">'+ blogPost.html + '</div></div>';
 
+	htmlstring += '<div class="comment_wrapper"><h3 class="comment_header">Comments</h3><div class="new_comment"></div><div class="comments"></div><div class="comment_pagination"></div></div>';
 	return htmlstring;
 }
 
@@ -396,6 +399,7 @@ function createEditBlog(){
 			currentPage = 1;
 			currentBlog = data;
 			$('.blog').html(CreateBlogHTML(data));
+			loadCommentSection(data["_id"]);
 			
 		}, error:function(jqxhr){
 			//console.log(jqxhr);
@@ -414,6 +418,8 @@ function createEditBlog(){
 		var answer = confirm("No changes will be saved. Are you sure you want to cancel?");
 		if(answer){
 			$('.blog').html(CreateBlogHTML(currentBlog));
+			loadCommentSection(currentBlog["_id"]);
+			
 		}
 	});
 }
@@ -450,6 +456,9 @@ function createNewBlog(){
 			currentPage = 1;
 			currentBlog = data;
 			$('.blog').html(CreateBlogHTML(data));
+			loadCommentSection(data["_id"]);
+			
+			
 			CreateBlogNav();
 		}, error:function(jqxhr){
 			//console.log(jqxhr);
@@ -468,6 +477,8 @@ function createNewBlog(){
 		var answer = confirm("This blog will not be saved. Are you sure you want to cancel?");
 		if(answer){
 			$('.blog').html(CreateBlogHTML(currentBlog));
+			loadCommentSection(currentBlog["_id"]);
+			
 		}
 	});
 }
@@ -481,5 +492,7 @@ function removeAdminPage(){
 	$('.blog_edit_link_spot').html('');
 	$('.new_blog_link_spot').html('');
 	$('.blog').html(CreateBlogHTML(currentBlog));
+	loadCommentSection(currentBlog["_id"]);
+			
 }
 

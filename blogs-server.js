@@ -20,7 +20,12 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 			res.on('data', function(data) {
 				user+=data;
 			}).on('end', function() {
-				callback(null, JSON.parse(user));
+				var obj = JSON.parse(user);
+				if(obj.error)
+					callback(obj,null);
+				else
+					callback(null, obj);
+
         });
 				
 		}).on('error',function(e){

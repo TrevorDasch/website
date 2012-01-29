@@ -35,7 +35,11 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			res.on('data', function(data) {
 				user+=data;
 			}).on('end', function() {
-				callback(null, JSON.parse(user));
+				var obj = JSON.parse(user);
+				if(obj.error)
+					callback(obj,null);
+				else
+					callback(null,obj);
         });
 				
 		}).on('error',function(e){
@@ -56,7 +60,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		var origin = req.header("Origin");
 		if(origin)
 			res.header("Access-Control-Allow-Origin",origin);
-		res.header("Access-Control-Allow-Headers","Content-Type");
+		res.header("Access-Control-Allow-Headers",["Content-Type","Authorization"]);
 		res.contentType("application/json");
 		next();
 	});
@@ -64,6 +68,18 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 	app.get('/monit', function(req,res){
 		res.send('{"success":true}');
 	});
+	
+	app.get('/comments/:article/count', function(req, res){
+		
+		var comments = new mongodb.Collection(client, req.params.article+'_comments');
+
+		comments.count({"root_comment":null},function(err,count){
+			var response = {};
+			response.count = count;
+			res.send(response);
+		});
+	});
+	
 	
 	app.get('/comments/:article/:page?', function(req, res){
 		
@@ -80,10 +96,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			
 			function loadComment(items, index, response){
 				if(index>=items.length){
-					comments.count({"root_comment":null},function(err,count){
-						response.count = count;
-						res.send(response);
-					});
+					res.send(response);
 				}
 				else{
 					var id = items[index]['_id'];
@@ -98,7 +111,8 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 						}
 						
 						for(var i in docobj){
-							if(docobj[i]['parent_comment'] == id){
+							
+							if(docobj[i]['parent_comment'].equals(id)){
 								response[id].children[i] = docobj[i];
 							}
 							else{
@@ -139,21 +153,32 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			var comment = {};
 			
 			comment.text = req.body.text;
+			
+			var str = req.body.text;
+			str = str.replace(/</g,'&lt;');
+			str = str.replace(/>/g,'&gt;');
+			str = str.replace(/\n/g,'<br/>');
+			comment.html = str;
+
 			comment.author = user.name;
 			comment.score = RANKS[user.rank].value;
+			comment.date = new Date();
 			comment.likes = [];
 			comment.dislikes = [];
 			comment.flags = [];
 			
+			var comments = new mongodb.Collection(client, req.params.article+'_comments');
 
 			
 			if(!req.params['parent_comment']){
 				comment['parent_comment'] = null;
 				comment['root_comment'] = null;
-				var comments = new mongodb.Collection(client, req.params.article+'_comments');
-
+		
 				comments.insert(comment,{safe:true},function(err,docs){
-					res.send(docs[0]);
+					if(err)
+						res.send('{"error":"failed to insert comment"}',500);
+					else
+						res.send(docs[0]);
 				});
 				
 			}
@@ -173,7 +198,10 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 							comment['root_comment'] = doc.root_comment;
 						
 						comments.insert(comment,{safe:true},function(err,docs){
-							res.send(docs[0]);
+							if(err)
+								res.send('{"error":"failed to insert comment"}',500);
+							else
+								res.send(docs[0]);
 						});
 					}
 				});
@@ -181,6 +209,58 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		});
 	});
 	
+	app.put('/comment/:article/:id', function(req, res){
+		
+		//user should be an object that contains name, score, and rank
+		validateUser(req.header("Authorization"),function(err,user){
+		
+			
+			if(err || !user){
+				res.send('{"error":"invalid user"}',401);
+				return;
+			}
+			
+			
+			if(!req.body.text){
+				res.send('{"error":"requires text"}',400);
+				return;
+			}
+			
+			var id = new mongodb.ObjectID(req.params.id);
+			
+			
+			
+			var comments = new mongodb.Collection(client, req.params.article+'_comments');
+
+			comments.findOne({"_id":id},function(err,comment){		
+			
+				if(err || !comment){
+					res.send('{"error":"invalid comment"}',400);
+					return;
+				}
+			
+				if(comment.author != user.name && !user.admin){
+					res.send('{"error":"cannot edit a comment that is not yours"}',401);
+					return;
+				}
+						
+				comment.text = req.body.text;
+				var str = req.body.text;
+				str = str.replace(/</g,'&lt;');
+				str = str.replace(/>/g,'&gt;');
+				str = str.replace(/\n/g,'<br/>');
+				comment.html = str;
+
+				comments.update({"_id":id},{safe:true},function(err){
+					if(err)
+						res.send('{"error":"failed to update comment"}',500);
+					else
+						res.send(comment);
+				});
+				
+			});
+		});
+	});
 	
 	
 	app.post('/like/:article/:comment', function(req, res){
@@ -194,10 +274,6 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			if(!req.body.text){
-				res.send('{"error":"requires text"}',400);
-				return;
-			}
 			
 			var id = new mongodb.ObjectID(req.params.comment);
 			
@@ -208,12 +284,19 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					res.send('{"error":"invalid comment"}',400);
 				}
 				else{
-					if(doc.likes.indexOf(user.name)==-1 && doc.dislikes.indexOf(user.name)==-1 && doc.flags.indexOf(user.name)==-1){						
-						comments.update(doc,{"$inc":{"score":RANKS[user.rank].value},"$push":{"likes":user.name}},{safe:true},function(err,docs){
+					if(user.name == doc.author){
+						res.send('{"error":"cannot like your own comment"}',400);
+						return;
+					}
+					
+					if(doc.likes.indexOf(user.name)==-1 && doc.dislikes.indexOf(user.name)==-1 && doc.flags.indexOf(user.name)==-1){				
+								
+						comments.update(doc,{"$inc":{"score":RANKS[user.rank].value},"$push":{"likes":user.name}},{safe:true},function(err){						
 													
-							updateScore(docs[0].author,RANKS[user.rank].value);
+							updateScore(doc.author,RANKS[user.rank].value);
 							
-							res.send(docs[0]);
+							doc.likes.push(user.name);
+							res.send(doc);
 						});
 					}
 					else{
@@ -237,11 +320,6 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			if(!req.body.text){
-				res.send('{"error":"requires text"}',400);
-				return;
-			}
-			
 			var id = new mongodb.ObjectID(req.params.comment);
 
 			var comments =new mongodb.Collection(client, req.params.article+'_comments');
@@ -251,12 +329,18 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					res.send('{"error":"invalid comment"}',400);
 				}
 				else{
+					if(user.name == doc.author){
+						res.send('{"error":"cannot dislike your own comment"}',400);
+						return;
+					}
 					if(doc.likes.indexOf(user.name)==-1 && doc.dislikes.indexOf(user.name)==-1 && doc.flags.indexOf(user.name)==-1){						
-						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$push":{"dislikes":user.name}},{safe:true},function(err,docs){
+						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$push":{"dislikes":user.name}},{safe:true},function(err){
 													
-							updateScore(docs[0].author,-RANKS[user.rank].value);
+																
+							updateScore(doc.author,-RANKS[user.rank].value);
 							
-							res.send(docs[0]);
+							doc.dislikes.push(user.name);
+							res.send(doc);
 						});
 					}
 					else{
@@ -280,11 +364,6 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			if(!req.body.text){
-				res.send('{"error":"requires text"}',400);
-				return;
-			}
-			
 			var id = new mongodb.ObjectID(req.params.comment);
 			
 			var comments =new mongodb.Collection(client, req.params.article+'_comments');
@@ -294,12 +373,17 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					res.send('{"error":"invalid comment"}',400);
 				}
 				else{
+					if(user.name == doc.author){
+						res.send('{"error":"cannot flag your own comment"}',400);
+						return;
+					}
 					if(doc.likes.indexOf(user.name)==-1 && doc.dislikes.indexOf(user.name)==-1 && doc.flags.indexOf(user.name)==-1){						
-						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$push":{"flags":user.name}},{safe:true},function(err,docs){
+						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$push":{"flags":user.name}},{safe:true},function(err){
 													
-							updateScore(docs[0].author,-RANKS[user.rank].value);
+							updateScore(doc.author,-RANKS[user.rank].value);
 							
-							res.send(docs[0]);
+							doc.flags.push(user.name);
+							res.send(doc);
 						});
 					}
 					else{
