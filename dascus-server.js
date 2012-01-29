@@ -61,6 +61,8 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		if(origin)
 			res.header("Access-Control-Allow-Origin",origin);
 		res.header("Access-Control-Allow-Headers",["Content-Type","Authorization"]);
+		
+		res.header("Access-Control-Allow-Methods","DELETE");
 		res.contentType("application/json");
 		next();
 	});
@@ -262,6 +264,47 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		});
 	});
 	
+	
+	app.delete('/comment/:article/:id', function(req, res){
+		
+		
+		//user should be an object that contains name, score, and rank
+		validateUser(req.header("Authorization"),function(err,user){
+		
+			
+			if(err || !user){
+				res.send('{"error":"invalid user"}',401);
+				return;
+			}
+			
+			
+			var id = new mongodb.ObjectID(req.params.id);
+			
+			
+			
+			var comments = new mongodb.Collection(client, req.params.article+'_comments');
+
+			comments.findOne({"_id":id},function(err,comment){		
+			
+				if(err || !comment){
+					res.send('{"error":"invalid comment"}',400);
+					return;
+				}
+			
+				if(comment.author != user.name && !user.admin){
+					res.send('{"error":"cannot delete a comment that is not yours"}',401);
+					return;
+				}
+						
+				comments.update({'root_comment':id},{'$set':{'root_comment':null, 'parent_comment':null}});		
+				comments.update({'parent_comment':id},{'$set':{'parent_comment':comment.parent_comment}});		
+				
+				comments.remove(comment);
+				res.send('{"success":true}');
+				
+			});
+		});
+	});
 	
 	app.post('/like/:article/:comment', function(req, res){
 		

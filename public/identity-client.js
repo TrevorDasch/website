@@ -72,6 +72,9 @@ function createLoginRegisterBox(domloc){
 					}
 					else
 						setCookie("token",token+"&"+username,30);
+						
+					if(refreshBlog)
+						refreshBlog();
 					
 					
 					createWelcomeLogoutBox(domloc);
@@ -117,6 +120,8 @@ function createLoginRegisterBox(domloc){
 				$.ajax(loginUrl+'/register',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"username":username,"password":password,"email":email}),'success':function(data){
 					token = data.token;
 					setCookie("token",token+"&"+username,30);
+					if(refreshBlog)
+						refreshBlog();
 					
 					createWelcomeLogoutBox(domloc);
 					
@@ -154,6 +159,9 @@ function createWelcomeLogoutBox(domloc){
 		username = null;
 		token = null;
 		setCookie("token","",-1);
+		admin = false;
+		if(refreshBlog)
+			refreshBlog();
 		if(removeAdminPage)
 			removeAdminPage();
 		createLoginRegisterBox(domloc);

@@ -375,14 +375,14 @@ input[type=button],input[type=submit]{
 }
 
 .comment{ 
-	margin: 10px 0px;
-	padding: 5px 0px 5px 20px;
+	margin: 10px 0px 0px 0px;
+	padding: 5px 0px 0px 20px;
 	border-top: 1px solid #18CAE6;
 }
 
 .comment .comment .comment .comment .comment{
-	margin: 5px 0px;
-	padding: 5px 0px;
+	margin: 10px 0px 0px 0px;
+	padding: 5px 0px 0px 0px;
 }
 
 .comment-author{
@@ -393,6 +393,7 @@ input[type=button],input[type=submit]{
 
 .comment-date{
 	margin: 0px 30px;
+	float: left;
 }
 
 .comment-text{
@@ -418,6 +419,7 @@ input[type=button],input[type=submit]{
 .comment-flag{
 	float: right;
 	color:black;
+	margin: 0px 10px;
 }
 .comment-flag:visited, .comment-flag:active {
 	color:black;
@@ -437,4 +439,8 @@ input[type=button],input[type=submit]{
 	width: 100%;
 	height: 100px;
 	margin: 10px 0px;
+}
+.comment-edit-links{
+	float:right;
+	margin: 0px 10px;
 }

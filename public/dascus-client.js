@@ -7,8 +7,6 @@ var APIURL = "http://"+document.domain+':3000';
 var current_comment_page = 1;
 var max_comment_page = 1;
 
-var currentArticle;
-
 var commentList;
 
 function createCommentHTML(comment){
@@ -18,9 +16,28 @@ function createCommentHTML(comment){
 	var commenthtml='<div class="comment-author comment-author-'+com+ '">';
 	commenthtml+= comment.author+'</div>';
 
-
-	commenthtml+='<div class="comment-date comment-date-'+com+ '">';
+	
+	commenthtml+='<div><div class="comment-date comment-date-'+com+ '">';
 	commenthtml+= howLongAgoString(Date.parse(comment.date))+'</div>';
+	if(username && username==comment.author || admin){
+	
+		commenthtml+='<div class="comment-edit-links comment-edit-links-'+com+ '">';
+	
+		commenthtml+='<a href="#" class="comment-edit" data-comment="'+com+ '">edit</a> / ';
+		commenthtml+='<a href="#" class="comment-delete" data-comment="'+com+ '">delete</a></div>';
+		
+	}
+	
+
+	
+	if(username && username!=comment.author && comment.likes.indexOf(username)==-1 &&comment.dislikes.indexOf(username)==-1 &&comment.flags.indexOf(username)==-1 ){
+	
+		commenthtml+='<a href="#" class="comment-flag" data-comment="'+com+ '">Flag for review</a>';
+	}
+	
+	
+	commenthtml+='</div><div class="comment-text comment-text-'+com+ '">';
+	commenthtml+= comment.html+'</div>';
 	
 	if(username && username!=comment.author && comment.likes.indexOf(username)==-1 &&comment.dislikes.indexOf(username)==-1 &&comment.flags.indexOf(username)==-1 ){
 	
@@ -28,14 +45,9 @@ function createCommentHTML(comment){
 	
 		commenthtml+='<a href="#" class="comment-like" data-comment="'+com+ '">Like</a> / ';
 		commenthtml+='<a href="#" class="comment-dislike" data-comment="'+com+ '">Dislike</a> ';
-		commenthtml+='<a href="#" class="comment-flag" data-comment="'+com+ '">Flag for review</a></div>';
+		commenthtml+='</div>';
 		
 	}
-
-	
-	
-	commenthtml+='<div class="comment-text comment-text-'+com+ '">';
-	commenthtml+= comment.html+'</div>';
 	
 	commenthtml+='<div class="comment-rating comment-rating-'+com+ '">';
 	
@@ -59,7 +71,7 @@ function createCommentHTML(comment){
 	commenthtml+= '</div>';
 
 	
-	commenthtml+= '<a href="#" class="reply" data-comment="'+com+'">Reply</a><div class="cleardiv"></div>';
+	commenthtml+= '<a href="#reply" class="reply" data-comment="'+com+'">Reply</a><div class="cleardiv"></div>';
 	
 	commenthtml+= '<div class="subcomments subcomments-'+com+'"></div>';
 				
@@ -67,7 +79,6 @@ function createCommentHTML(comment){
 }
 
 function loadCommentSection(article){
-	currentArticle = article;
 	loadComments(article, 1, COMMENT_DIV);
 	paginateComments(article, COMMENT_PAGE_DIV);
 	createNewCommentButton(article, NEW_COMMENT_DIV);
@@ -90,14 +101,18 @@ function loadComments(article, page, comment_div){
 		function display(id, comments, viscount, div){
 			$(div).html('');
 			
-			if(viscount<=0){
-				$(div).append('<a href="#" class="show-more" data-comment="'+id+'">Show More</a>');
-				return;
-			}
+			
 			
 			var coms = [];
 			for(var com in comments){
 				coms.push(com);
+			}
+			if(coms.length == 0)
+				return;
+			
+			if(viscount<=0){
+				$(div).append('<a href="#" class="show-more" data-comment="'+commentList[id].parent_comment+'">Show More</a>');
+				return;
 			}
 			
 			coms.sort(function(a,b){
@@ -121,13 +136,16 @@ function loadComments(article, page, comment_div){
 		}
 		
 		populateCommentList(data);
-		$(comment_div).append('<div class="comment_list"></div>');
+		$(comment_div).html('<div class="comment_list"></div>');
 		display(null,data,7,'.comment_list');
 		
 		$('.show-more').die('click');
 		$('.show-more').live('click',function(){
 			var id = $(this).attr('data-comment');
-			display(id,commentList[id].children,commentList[id].children.length,'.subcomments-'+id);
+			var c = 0;
+			for( var x in commentList[id].children)
+				c++
+			display(id,commentList[id].children,c+2,'.subcomments-'+id);
 			return false;
 		});
 		
@@ -178,8 +196,41 @@ function loadComments(article, page, comment_div){
 		$('.reply').live('click',function(){
 			var id = $(this).attr('data-comment');
 			createNewCommentForm(article,NEW_COMMENT_DIV, id);
+		});
+		
+			
+		$('.comment-edit').die('click');
+		$('.comment-edit').live('click',function(){
+			var id = $(this).attr('data-comment');
+			createEditCommentForm(article,NEW_COMMENT_DIV, id);
 			return false;
 		});
+		
+		$('.comment-delete').die('click');
+		$('.comment-delete').live('click',function(){
+			var id = $(this).attr('data-comment');
+			$.ajax(APIURL+'/comment/'+article+'/'+id, {type:'delete',headers:{"Authorization":token}, success:function(){
+				console.log('deleted');
+				
+				for(var x in commentList[id].children){
+					if(commentList[id].parent_comment){
+						commentList[commentList[id].parent_comment].children[x] = commentList[id].children[x];
+						commentList[id].children[x].parent_comment =commentList[id].parent_comment;
+					}
+					else{
+						commentList[id].children[x].parent_comment =null;
+						commentList[id].children[x].root_comment =null;
+					}
+				}
+				
+				$('.comment-'+id).replaceWith($('.subcomments-'+id).html());
+			}, error: function(){
+				
+			}});
+
+			return false;
+		});
+		
 		
 	}});
 }
@@ -187,7 +238,7 @@ function loadComments(article, page, comment_div){
 function createNewCommentForm(article,div,target){
 
 	var htmlstring = '<div class="comment_warning"></div><form method="POST" target="#" class="new_comment_post">';
-	
+	htmlstring += '<a name="reply"></a>';
 	if(target && target != "")
 		htmlstring += 'Reply to '+commentList[target].author+':<br/>';
 			
@@ -199,6 +250,11 @@ function createNewCommentForm(article,div,target){
 	$(div).html(htmlstring);
 	
 	$('.new_comment_post').submit(function(){
+		if(!token){
+			$('.comment_warning').html('<span class="warning_text">Must be logged in to comment.</span>');
+			return false;			
+		}
+		
 		var text = $('.comment_text_area').val();
 		if(!text){
 			$('.comment_warning').html('<span class="warning_text">Comments can\'t be empty</span>');
@@ -218,6 +274,13 @@ function createNewCommentForm(article,div,target){
 			var commenthtml = '<div class="comment comment-'+com+'">';
 			commenthtml +=createCommentHTML(data);
 			commenthtml+='</div>';
+			commentList[com] = data;
+			data.children = {};
+			if(data.parent_comment){
+				if(!commentList[data.parent_comment].children)
+					commentList[data.parent_comment].children = {};
+				commentList[data.parent_comment].children[com] = data;
+			}
 
 			if(target && target != ""){
 				$('.subcomments-'+target).append(commenthtml);
@@ -305,7 +368,7 @@ function howLongAgoString(time){
 	if(diff>MINUTE*2)
 		return Math.floor(diff/MINUTE) + " minutes ago";
 	if(diff>MINUTE+SECOND*2)
-		return "1 minute, "+(Math.floor(diff/DAY)-60)+" seconds ago";
+		return "1 minute, "+(Math.floor(diff/SECOND)-60)+" seconds ago";
 	if(diff>SECOND+MINUTE)
 		return "1 minute, 1 second ago";
 	if(diff>MINUTE)

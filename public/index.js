@@ -492,7 +492,10 @@ function removeAdminPage(){
 	$('.blog_edit_link_spot').html('');
 	$('.new_blog_link_spot').html('');
 	$('.blog').html(CreateBlogHTML(currentBlog));
+	loadCommentSection(currentBlog["_id"]);			
+}
+
+function refreshBlog(){
 	loadCommentSection(currentBlog["_id"]);
-			
 }
 
