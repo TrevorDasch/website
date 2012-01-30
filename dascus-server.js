@@ -167,9 +167,12 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			comment.author = {name:user.name,id:user["_id"]};
 			comment.score = RANKS[user.rank].value;
 			comment.date = new Date();
-			comment.likes = [];
-			comment.dislikes = [];
-			comment.flags = [];
+			comment.likes = {};
+			comment.dislikes = {};
+			comment.flags = {};
+			comment.likecount =0;
+			comment.dislikecount = 0;
+			comment.flagcount =0;
 			
 			var comments = new mongodb.Collection(client, req.params.article+'_comments');
 
@@ -356,13 +359,14 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					}
 					
 					var userid = user["_id"].toString();
-					if(doc.likes.indexOf(userid)==-1 && doc.dislikes.indexOf(userid)==-1 && doc.flags.indexOf(userid)==-1){				
+					if(!doc.likes[userid] && !doc.dislikes[userid] && !doc.flags[userid]){				
 								
-						comments.update(doc,{"$inc":{"score":RANKS[user.rank].value},"$push":{"likes":userid}},{safe:true},function(err){						
+						comments.update(doc,{"$inc":{"score":RANKS[user.rank].value},"$set":{"likes."+userid:user.name}, "$inc":{"likecount":1}},{safe:true},function(err){						
 													
 							updateScore(doc.author.id,RANKS[user.rank].value);
 							
-							doc.likes.push(userid);
+							doc.likes[userid] = user.name;
+							docs.likecount++;
 							res.send(doc);
 						});
 					}
@@ -408,13 +412,15 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					}
 					
 					var userid = user["_id"].toString();
-					if(doc.likes.indexOf(userid)==-1 && doc.dislikes.indexOf(userid)==-1 && doc.flags.indexOf(userid)==-1){				
+					if(!doc.likes[userid] && !doc.dislikes[userid] && !doc.flags[userid]){				
 								
-						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$push":{"dislikes":userid}},{safe:true},function(err){						
+						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$set":{"dislikes."+userid:user.name}, "$inc":{"dislikecount":1}},{safe:true},function(err){						
 													
 							updateScore(doc.author.id,-RANKS[user.rank].value);
 							
-							doc.dislikes.push(userid);
+							
+							doc.dislikes[userid] = user.name;
+							docs.dislikecount++;
 							res.send(doc);
 						});
 					}
@@ -462,17 +468,18 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					}
 					
 					var userid = user["_id"].toString();
-					if(doc.likes.indexOf(userid)==-1 && doc.dislikes.indexOf(userid)==-1 && doc.flags.indexOf(userid)==-1){				
+					if(!doc.likes[userid] && !doc.dislikes[userid] && !doc.flags[userid]){				
 								
-						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$push":{"flags":userid}},{safe:true},function(err){						
+						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$set":{"flags."+userid:user.name}, "$inc":{"flagcount":1}},{safe:true},function(err){						
 													
 							updateScore(doc.author.id,-RANKS[user.rank].value);
 							
-							doc.flags.push(userid);
+							
+							doc.flags[userid] = user.name;
+							docs.flagcount++;
 							res.send(doc);
 						});
 					}
-
 					else{
 						res.send('{"error":"already rated this"}',400);
 					}

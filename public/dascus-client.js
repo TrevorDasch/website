@@ -30,7 +30,7 @@ function createCommentHTML(comment){
 	
 
 	
-	if(userid && userid!=comment.author.id && comment.likes.indexOf(userid)==-1 &&comment.dislikes.indexOf(userid)==-1 &&comment.flags.indexOf(userid)==-1 ){
+	if(userid && userid!=comment.author.id && !comment.likes[userid] && !comment.dislikes[userid] &&!comment.flags[userid] ){
 	
 		commenthtml+='<a href="#" class="comment-flag" data-comment="'+com+ '">Flag for review</a>';
 	}
@@ -39,7 +39,7 @@ function createCommentHTML(comment){
 	commenthtml+='</div><div class="comment-text comment-text-'+com+ '">';
 	commenthtml+= comment.html+'</div>';
 	
-	if(userid && userid!=comment.author.id && comment.likes.indexOf(userid)==-1 &&comment.dislikes.indexOf(userid)==-1 &&comment.flags.indexOf(userid)==-1 ){
+	if(userid && userid!=comment.author.id && !comment.likes[userid] && !comment.dislikes[userid] &&!comment.flags[userid] ){
 	
 		commenthtml+='<div class="comment-rating-links comment-rating-links-'+com+ '">';
 	
@@ -51,22 +51,50 @@ function createCommentHTML(comment){
 	
 	commenthtml+='<div class="comment-rating comment-rating-'+com+ '">';
 	
-	if(comment.likes.length==1)
-		commenthtml+= "Liked by "+comment.likes[0]+".";
-	
-	if(comment.likes.length==2)
-		commenthtml+= "Liked by "+comment.likes[0]+ " and "+comment.likes[1]+".";
+	if(comment.likecount==1){
+		for(var x in comment.likes){commenthtml+= "Liked by "+comment.likes[x]+"."; break;}
+	}
+	if(comment.likecount==2){
+		var c =0;
+		for(var x in comment.likes){
+			if(c==0)
+				commenthtml+= "Liked by "+comment.likes[x]+" and ";
+			if(c==1){
+				commenthtml+= comment.likes[x]+".";
+				break;
+			}
+			c++;
+		}
+	}
+	if(comment.likecount==3){
+		var c =0;
+		for(var x in comment.likes){
+			if(c==0)
+				commenthtml+= "Liked by "+comment.likes[x]+" and ";
+			if(c==1){
+				commenthtml+= comment.likes[x]+", and 1 other.";
+				break;
+			}
+			c++;
+		}
+	}
+	if(comment.likes.length>3){
+		var c =0;
+		for(var x in comment.likes){
+			if(c==0)
+				commenthtml+= "Liked by "+comment.likes[x]+" and ";
+			if(c==1){
+				commenthtml+= comment.likes[x]+", and "+comment.likecount-2+" others.";
+				break;
+			}
+			c++;
+		}
+	}
 		
-	if(comment.likes.length==3)
-		commenthtml+= "Liked by "+comment.likes[0]+ ", "+comment.likes[1] +", and 1 other.";
-	
-	if(comment.likes.length>3)
-		commenthtml+= "Liked by "+comment.likes[0]+ ", "+comment.likes[1] +", and "+comment.likes.length-2+" others.";
-	
-	if(comment.dislikes.length==1)
-		commenthtml+= " Disiked by "+comment.dislikes.length+" person.";
-	if(comment.dislikes.length>1)
-		commenthtml+= " Disiked by "+comment.dislikes.length+" people.";
+	if(comment.dislikecount==1)
+		commenthtml+= " Disiked by 1 person.";
+	if(comment.dislikecount>1)
+		commenthtml+= " Disiked by "+comment.dislikecount+" people.";
 
 	commenthtml+= '</div>';
 
