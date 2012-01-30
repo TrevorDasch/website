@@ -184,7 +184,7 @@ function loadComments(article, page, comment_div){
 				return;
 			$.ajax(APIURL+'/like/'+article+'/'+id, {type:'post',headers:{"Authorization":token}, success:function(data){
 				$('.comment-'+data["_id"]).html(createCommentHTML(data));
-				display(id,data.children,5,'.subcomments-'+id);
+				display(id,commentList[id].children,5,'.subcomments-'+id);
 			}, error: function(){
 				
 			}});
@@ -198,7 +198,7 @@ function loadComments(article, page, comment_div){
 				return;
 			$.ajax(APIURL+'/dislike/'+article+'/'+id, {type:'post',headers:{"Authorization":token}, success:function(data){
 				$('.comment-'+data["_id"]).html(createCommentHTML(data));
-				display(id,data.children,5,'.subcomments-'+id);
+				display(id,commentList[id].children,5,'.subcomments-'+id);
 			}, error: function(){
 				
 			}});

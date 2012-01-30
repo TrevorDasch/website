@@ -360,13 +360,13 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					
 					var userid = user["_id"].toString();
 					if(!doc.likes[userid] && !doc.dislikes[userid] && !doc.flags[userid]){				
-								
-						comments.update(doc,{"$inc":{"score":RANKS[user.rank].value},"$set":{"likes."+userid:user.name}, "$inc":{"likecount":1}},{safe:true},function(err){						
+						doc.likes[userid] = user.name;
+
+						comments.update({"_id":doc["_id"]},{"$inc":{"score":RANKS[user.rank].value,"likecount":1},"$set":{"likes":doc.likes}},{safe:true},function(err){						
 													
 							updateScore(doc.author.id,RANKS[user.rank].value);
 							
-							doc.likes[userid] = user.name;
-							docs.likecount++;
+							doc.likecount++;
 							res.send(doc);
 						});
 					}
@@ -413,14 +413,14 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					
 					var userid = user["_id"].toString();
 					if(!doc.likes[userid] && !doc.dislikes[userid] && !doc.flags[userid]){				
-								
-						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$set":{"dislikes."+userid:user.name}, "$inc":{"dislikecount":1}},{safe:true},function(err){						
+						 doc.dislikes[userid] = user.name;
+	
+						comments.update({"_id":doc["_id"]},{"$inc":{"score":-RANKS[user.rank].value, "dislikecount":1},"$set":{"dislikes":doc.dislikes}},{safe:true},function(err){						
 													
 							updateScore(doc.author.id,-RANKS[user.rank].value);
 							
 							
-							doc.dislikes[userid] = user.name;
-							docs.dislikecount++;
+							doc.dislikecount++;
 							res.send(doc);
 						});
 					}
@@ -469,14 +469,13 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 					
 					var userid = user["_id"].toString();
 					if(!doc.likes[userid] && !doc.dislikes[userid] && !doc.flags[userid]){				
-								
-						comments.update(doc,{"$inc":{"score":-RANKS[user.rank].value},"$set":{"flags."+userid:user.name}, "$inc":{"flagcount":1}},{safe:true},function(err){						
+						doc.flags[userid] = user.name;
+
+						comments.update({"_id":doc["_id"]},{"$inc":{"score":-RANKS[user.rank].value, "flagcount":1},"$set":{"flags":doc.flags}},{safe:true},function(err){						
 													
 							updateScore(doc.author.id,-RANKS[user.rank].value);
 							
-							
-							doc.flags[userid] = user.name;
-							docs.flagcount++;
+							doc.flagcount++;
 							res.send(doc);
 						});
 					}
