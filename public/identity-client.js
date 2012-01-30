@@ -82,12 +82,9 @@ function createLoginRegisterBox(domloc){
 					var resp = JSON.parse(jqxhr.responseText);
 					if(resp && resp.error){
 						errstring = "Error: "+resp.error;
+						console.log(errstring);
 					}
 				}
-				$('.login-error').html('<span class="warning_text">'+errstring+'</span>');
-				if(username.length<5)
-					$('.login-email').val('');
-				$('.login-password').val('');
 			}});		 
 	   } else {
 		 console.log('User cancelled login or did not fully authorize.');
@@ -97,8 +94,7 @@ function createLoginRegisterBox(domloc){
 	
 	
 	
-	$(domloc).html('<div class="fb-login-button" data-show-faces="true" data-width="300" data-max-rows="1" onlogin="loginFB">'+
-					'</div><a href="#" class="login-link">Login</a> / <a href="#" class="register-link">Register</a>');
+	$(domloc).html('<div class="external_logins"></div><a href="#" class="login-link">Login</a> / <a href="#" class="register-link">Register</a>');
 	
 	
 	
@@ -111,6 +107,20 @@ function createLoginRegisterBox(domloc){
 			js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=159451960833534";
 			fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
+	
+		$('.external_logins').append('<a href="#!blog" class="fblogin_link">Login with Facebook</a>');
+		$('.fblogin_link').click(function(){
+			 FB.getLoginStatus(function(r){
+	                        if(r.session){
+                	                console.log(r);
+                  	     	 }
+				else{
+					FB.login(loginFB);
+				}
+                	});
+
+		});
+
 	}
 		
 		

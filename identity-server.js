@@ -78,7 +78,8 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 	}
 	
 	function getFacebookUser(oAuth, callback){
-		https.get({host:"graph.facebook.com",path:"/me?access_token="+oAuth}, function(res){
+
+		https.get({host:"graph.facebook.com",path:"/me?access_token="+encodeURIComponent(oAuth.accessToken)}, function(res){
 			var user = "";
 			res.on('data', function(data) {
 				user+=data;
@@ -164,8 +165,8 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 				return;
 			}
 			if( md5(password) == user.password)
-				res.send('{"token":"'+encrypt(user["_id"].toString())+'","admin":'+(user.admin?'true':'false')+',"username":"'+user.name+'","id":"'+user["_id"]+'"}');
-			else{
+				res.send({"token":encrypt(user["_id"].toString()),"username":user.name,"id":user["_id"],"admin":user.admin});
+else{
 				res.send('{"error":"invalid name or password"}',400);
 			}			
 		});
@@ -212,7 +213,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 					if(err || docs.length == 0)
 						res.send('{"error":"something bad happened"}',500);
 					else
-						res.send('{"token":"'+encrypt(docs[0]["_id"].toString())+',"username":"'+docs[0].name+'","id":"'+docs[0]["_id"]+'"}');
+						res.send({"token":encrypt(docs[0]["_id"].toString()),"username":docs[0].name,"id":docs[0]["_id"]});
 				});
 			}
 			else{
@@ -256,12 +257,13 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 						if(err || docs.length == 0)
 							res.send('{"error":"something bad happened"}',500);
 						else
-							res.send('{"token":"'+encrypt(docs[0]["_id"].toString())+',"username":"'+docs[0].name+'","id":"'+docs[0]["_id"]+'"}');
+							res.send({"token":encrypt(docs[0]["_id"].toString()),"username":docs[0].name,"id":docs[0]["_id"]});
+					
 					});	
 				}
 				else{
-					res.send('{"token":"'+encrypt(doc["_id"].toString())+'","admin":'+(doc.admin?'true':'false')+',"username":"'+doc.name+'","id":"'+doc["_id"]+'"}');
-					
+					res.send({"token":encrypt(doc["_id"].toString()),"username":doc.name,"id":doc["_id"],"admin":doc.admin});
+	
 				}
 			});
 		});
