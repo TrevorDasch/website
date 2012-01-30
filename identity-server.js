@@ -1,8 +1,8 @@
-var SERVERKEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
-		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+var keys = require(__dirname+'/keys.json');
 
-var CRYPTOKEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
-		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+var SERVERKEY =keys.serverkey;
+
+var CRYPTOKEY = keys.cryptokey;
 
 
 var RANKS = [
@@ -20,6 +20,7 @@ var RANKS = [
 var express = require('express');
 var mongodb = require('mongodb');
 var crypto = require('crypto');
+var https = require('https');
 
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
@@ -76,7 +77,21 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 			digest("hex");
 	}
 	
-	
+	function getFacebookUser(oAuth, callback){
+		https.get({host:"graph.facebook.com",path:"/me?access_token="+oAuth}, function(res){
+			var user = "";
+			res.on('data', function(data) {
+				user+=data;
+			}).on('end', function() {
+				var obj = JSON.parse(user);
+				if(obj.error)
+					callback(obj,null);
+				else
+					callback(null, obj);
+
+			});
+		});
+	}
 			
 	var app = express.createServer();
 	
@@ -95,15 +110,22 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		res.send('{"success":true}');
 	});
 	
-	app.get("/updatescore/:username/:val/:key",function(req,res){
+	app.get("/updatescore/:id/:val/:key",function(req,res){
 		if(req.params.key==SERVERKEY){
 			var users = new mongodb.Collection(client, 'users');
-			var username = req.params.username;
+			var id;
+			
+			try{
+				id = new mongodb.ObjectID(req.params.id);
+			}catch(e){
+				res.send('{"error":"invalid user"}',400);
+				return;
+			}
 			var val = req.params.val;
 		
-			users.findOne({"name":username},function(err,doc){
+			users.findOne({"_id":id},function(err,doc){
 				if(err || !doc){
-					res.send('{"error":"no user with that username"}',400);
+					res.send('{"error":"no user with that id"}',400);
 					return;
 				}
 				
@@ -125,24 +147,24 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 	app.post("/login",function(req,res){
 		//console.log(req.body);
 		
-		var username = req.body.username;
+		var email = req.body.email;
 		var password = req.body.password;
 		
 		
-		if(!username || !password){
-			res.send('{"error":"invalid name or password"}',400);
+		if(!email || !password){
+			res.send('{"error":"invalid email or password"}',400);
 			return;
 		}
 		
 		var users = new mongodb.Collection(client, 'users');
 		
-		users.findOne({name: username},function(err,user){
+		users.findOne({email: email},function(err,user){
 			if(err || !user){
-				res.send('{"error":"invalid name or password"}',400);
+				res.send('{"error":"invalid email or password"}',400);
 				return;
 			}
 			if( md5(password) == user.password)
-				res.send('{"token":"'+encrypt(user["_id"].toString())+'","admin":'+(user.admin?'true':'false')+'}');
+				res.send('{"token":"'+encrypt(user["_id"].toString())+'","admin":'+(user.admin?'true':'false')+',"username":"'+user.name+'","id":"'+user["_id"]+'"}');
 			else{
 				res.send('{"error":"invalid name or password"}',400);
 			}			
@@ -179,7 +201,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		
 		var users = new mongodb.Collection(client, 'users');
 		
-		users.findOne({name: username},function(err,doc){
+		users.findOne({"$or":[{name: username},{ email:email}]},function(err,doc){
 			if(err || !doc){
 				users.insert({"name":username,
 							  "password":md5(password),
@@ -190,31 +212,82 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 					if(err || docs.length == 0)
 						res.send('{"error":"something bad happened"}',500);
 					else
-						res.send('{"token":"'+encrypt(docs[0]["_id"].toString())+'"}');
+						res.send('{"token":"'+encrypt(docs[0]["_id"].toString())+',"username":"'+docs[0].name+'","id":"'+docs[0]["_id"]+'"}');
 				});
 			}
 			else{
-				res.send('{"error":"invalid name or password"}',400);
-			}			
+				if( doc.name == username)
+					res.send('{"error":"username name already taken"}',400);
+				else
+					res.send('{"error":"an account exists with that email"}',400);
+			}
+		});
+	});
+	
+	
+	app.post("/loginfacebook",function(req,res){
+		//console.log(req.body);
+		
+		var oAuth = req.body.oAuth;
+		
+		
+		if(!oAuth){
+			res.send('{"error":"oAuth token required to log in with facebook"}',401);
+			return;
+		}
+		
+		getFacebookUser(oAuth,function(err,user){
+			if(err || !user){
+				console.log(err);
+				res.send('{"error":"failed to retrieve identity from facebook"}',400);
+				return;
+			}
+		
+			var users = new mongodb.Collection(client, 'users');
+			
+			
+			users.findOne({facebookId: user.id},function(err,doc){
+				if(err || !doc){
+					users.insert({"name":user.name,
+							  "facebookId":user.id,
+							  "score":0,
+							  "rank":0
+					},{"safe":true},function(err,docs){
+						if(err || docs.length == 0)
+							res.send('{"error":"something bad happened"}',500);
+						else
+							res.send('{"token":"'+encrypt(docs[0]["_id"].toString())+',"username":"'+docs[0].name+'","id":"'+docs[0]["_id"]+'"}');
+					});	
+				}
+				else{
+					res.send('{"token":"'+encrypt(doc["_id"].toString())+'","admin":'+(doc.admin?'true':'false')+',"username":"'+doc.name+'","id":"'+doc["_id"]+'"}');
+					
+				}
+			});
 		});
 	});
 	
 	app.get("/validate/:token/:key",function(req, res){
 		//console.log("validating");
 		//console.log(req.params.key);
+		//console.log(SERVERKEY);
 		//console.log(req.params.token);
 		if(req.params.key==SERVERKEY){
 			var token = req.params.token;
 			var users = new mongodb.Collection(client, 'users');
 
 			var dectok = decrypt(token);
-			if(!dectok){
+			
+			var id;
+			try{
+				id = new mongodb.ObjectID(dectok);
+			}
+			catch(e){
 				res.send('{"error":"unauthorized"}',401);
 				return;
 			}
 				
 			//replace with crypto
-			var id = new mongodb.ObjectID(dectok);
 			users.findOne({"_id":id},function(err,doc){
 				res.send(doc);
 			});

@@ -2,6 +2,7 @@
 var loginUrl = "http://"+document.domain+":4000";
 var token = null;
 var username;
+var userid;
 var admin = false;
 
 function setCookie(c_name,value,exdays)
@@ -33,7 +34,9 @@ function createLoginRegisterBox(domloc){
 		var cks =cookie.split("&");
 		token = cks[0];
 		username = cks[1];
-		if(cks.length==3)
+		userid = cks[2];
+		
+		if(cks.length==4)
 			admin = true;
 	}
 	
@@ -44,12 +47,76 @@ function createLoginRegisterBox(domloc){
 	}
 	else{
 	
-	$(domloc).html('<a href="#" class="login-link">Login</a> / <a href="#" class="register-link">Register</a>');
+	
+	function loginFB(response) {
+		if (response.authResponse) {
+			console.log('Welcome!  Fetching your information.... ');
+	 
+			$.ajax(loginUrl+'/loginfacebook',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"oAuth":response.authResponse}),'success':function(data){
+				
+				token = data.token;
+				admin = data.admin;
+				
+				username = data.username;
+				userid = data.id;
+				
+				if(admin){
+					setCookie("token",token+"&"+username+"&"+userid+"&admin",30);
+					
+					if(createAdminPage)
+						createAdminPage();
+				}
+				else
+					setCookie("token",token+"&"+username+"&"+userid,30);
+					
+				if(refreshBlog)
+					refreshBlog();
+				
+				
+				createWelcomeLogoutBox(domloc);
+				
+			},'error':function(jqxhr){
+				var errstring = "Error: something bad happened";
+				//console.log(jqxhr);
+				if(jqxhr.responseText){
+					var resp = JSON.parse(jqxhr.responseText);
+					if(resp && resp.error){
+						errstring = "Error: "+resp.error;
+					}
+				}
+				$('.login-error').html('<span class="warning_text">'+errstring+'</span>');
+				if(username.length<5)
+					$('.login-email').val('');
+				$('.login-password').val('');
+			}});		 
+	   } else {
+		 console.log('User cancelled login or did not fully authorize.');
+	   }
+	 }
+	
+	
+	
+	
+	$(domloc).html('<div class="fb-login-button" data-show-faces="true" data-width="300" data-max-rows="1" onlogin="loginFB">'+
+					'</div><a href="#" class="login-link">Login</a> / <a href="#" class="register-link">Register</a>');
+	
+	
+	
+	if(document.domain.indexOf("trevordasch.com")!=-1){
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) return;
+			
+			js = d.createElement(s); js.id = id;
+			js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=159451960833534";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+	}
 		
 		
 	$('.login-link').click(function(){
 		$(domloc).html('<div class="login-error"></div><form method="POST" class="login-form" action="#">\
-						Username: <input type="text" class="login-username" name="username" size="20" /><br />\
+						Email:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="login-email" name="email" size="20" /><br />\
 						Password: <input type="password" class="login-password" name="password" size="20" /><br />\
 						<div align="center">\
 						<p><input type="submit" value="Login" /><input type="button" value="Cancel" class="cancel_login_register"/></p>\
@@ -57,21 +124,23 @@ function createLoginRegisterBox(domloc){
 						</form><div class="cleardiv"></div>');
 		function attachLoginFormListener(){
 			$('.login-form').submit(function(){
-				username = $('.login-username').val();
+				var email = $('.login-email').val();
 				var password = $('.login-password').val();
 				
-				$.ajax(loginUrl+'/login',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"username":username,"password":password}),'success':function(data){
+				$.ajax(loginUrl+'/login',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"email":email,"password":password}),'success':function(data){
 					
 					token = data.token;
 					admin = data.admin;
+					username = data.username;
+					userid = data.id;
 					if(admin){
-						setCookie("token",token+"&"+username+"&admin",30);
+						setCookie("token",token+"&"+username+"&"+userid+"&admin",30);
 						
 						if(createAdminPage)
 							createAdminPage();
 					}
 					else
-						setCookie("token",token+"&"+username,30);
+						setCookie("token",token+"&"+username+"&"+userid,30);
 						
 					if(refreshBlog)
 						refreshBlog();
@@ -89,8 +158,9 @@ function createLoginRegisterBox(domloc){
 						}
 					}
 					$('.login-error').html('<span class="warning_text">'+errstring+'</span>');
-					if(username.length<5)
-						$('.login-username').val('');
+					var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;	
+					if(!re.test(email))
+						$('.register-email').val('');
 					$('.login-password').val('');
 				}});
 				
@@ -104,9 +174,9 @@ function createLoginRegisterBox(domloc){
 	
 	$('.register-link').click(function(){
 		$(domloc).html('<div class="register-error"></div><form method="POST" class="register-form" action="#">\
+						Email:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="register-email" name="email" size="20" /><br />\
 						Username: <input type="text" class="register-username" name="username" size="20" /><br />\
 						Password: <input type="password" class="register-password" name="password" size="20" /><br />\
-						Email:&nbsp;&nbsp;&nbsp;&nbsp;<input type="text" class="register-email" name="email" size="20" /><br />\
 						<div align="center">\
 						<p><input type="submit" value="Register" /><input type="button" value="Cancel" class="cancel_login_register"/></p>\
 						</div>\
@@ -119,7 +189,9 @@ function createLoginRegisterBox(domloc){
 				
 				$.ajax(loginUrl+'/register',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"username":username,"password":password,"email":email}),'success':function(data){
 					token = data.token;
-					setCookie("token",token+"&"+username,30);
+					username = data.username;
+					userid = data.id;
+					setCookie("token",token+"&"+username+"&"+userid,30);
 					if(refreshBlog)
 						refreshBlog();
 					

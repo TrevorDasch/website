@@ -1,5 +1,6 @@
-var KEY ="KRFE0tP3IUBVGF2YAkqt1pERdGft6UlOojFzwvhV2Bpby75xaTxWHO4rWbZpQ"+
-		  "fa3ObP25mG9rEQqrvLgmSnoyCkbvceG425sXeftyy5LzxgK7U2nnK0YVBma";
+var keys = require(__dirname+'/keys.json');
+
+var KEY =keys.serverkey;
 
 var IDENTITYSERVER = {"host":"127.0.0.1", "port":4000};
 
@@ -42,7 +43,8 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		var origin = req.header("Origin");
 		if(origin)
 			res.header("Access-Control-Allow-Origin",origin);
-		res.header("Access-Control-Allow-Headers","Content-Type");
+		res.header("Access-Control-Allow-Headers",["Content-Type","Authorization"]);
+		res.header("Access-Control-Allow-Methods","DELETE");
 		next();
 	});
 	
@@ -132,7 +134,16 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 			
 			var blogs = new mongodb.Collection(client, 'blogs');
 
-			blogs.findOne({"_id":new mongodb.ObjectID(req.params.id)},function(err,doc){
+
+			var id;
+			try{
+				id = new mongodb.ObjectID(req.params.id);
+			}catch(e){
+				res.send('{"error":"invalid blog"}',400);
+				return;
+			}
+			
+			blogs.findOne({"_id":id},function(err,doc){
 				if(err ||!doc){
 					res.send('{"error":"invalid blog"}',400);
 					return;
@@ -150,13 +161,48 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 					blogPost.html = bbReplace(text);
 				}
 				
-				blogs.update({"_id":new mongodb.ObjectID(req.params.id)},blogPost,{safe: true},function(err){
+				blogs.update({"_id":id},blogPost,{safe: true},function(err){
 					if(err)
 						res.send('{"error":"failed to update blog"}',500);
 					else{
 						res.send(blogPost);
 					}
 				});
+			});
+		
+		});
+	});
+	
+	app.delete('/blog/:id',function(req, res){
+		
+		res.contentType('application/json');
+		
+		validateUser(req.header("Authorization"),function(err,user){
+			if(err || !user.admin){
+				res.send('{"error":"invalid user"}',401);
+				return;
+			}
+			
+			var blogs = new mongodb.Collection(client, 'blogs');
+
+
+			var id;
+			try{
+				id = new mongodb.ObjectID(req.params.id);
+			}catch(e){
+				res.send('{"error":"invalid blog"}',400);
+				return;
+			}
+			
+			blogs.findOne({"_id":id},function(err,doc){
+				if(err ||!doc){
+					res.send('{"error":"invalid blog"}',400);
+					return;
+				}
+				
+				blogs.remove({"_id":id});
+				res.send('{"success":true}');
+				
 			});
 		
 		});

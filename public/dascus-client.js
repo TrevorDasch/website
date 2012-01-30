@@ -14,12 +14,12 @@ function createCommentHTML(comment){
 	
 				
 	var commenthtml='<div class="comment-author comment-author-'+com+ '">';
-	commenthtml+= comment.author+'</div>';
+	commenthtml+= comment.author.name+'</div>';
 
 	
 	commenthtml+='<div><div class="comment-date comment-date-'+com+ '">';
 	commenthtml+= howLongAgoString(Date.parse(comment.date))+'</div>';
-	if(username && username==comment.author || admin){
+	if(userid && userid==comment.author.id || admin){
 	
 		commenthtml+='<div class="comment-edit-links comment-edit-links-'+com+ '">';
 	
@@ -30,7 +30,7 @@ function createCommentHTML(comment){
 	
 
 	
-	if(username && username!=comment.author && comment.likes.indexOf(username)==-1 &&comment.dislikes.indexOf(username)==-1 &&comment.flags.indexOf(username)==-1 ){
+	if(userid && userid!=comment.author.id && comment.likes.indexOf(userid)==-1 &&comment.dislikes.indexOf(userid)==-1 &&comment.flags.indexOf(userid)==-1 ){
 	
 		commenthtml+='<a href="#" class="comment-flag" data-comment="'+com+ '">Flag for review</a>';
 	}
@@ -39,7 +39,7 @@ function createCommentHTML(comment){
 	commenthtml+='</div><div class="comment-text comment-text-'+com+ '">';
 	commenthtml+= comment.html+'</div>';
 	
-	if(username && username!=comment.author && comment.likes.indexOf(username)==-1 &&comment.dislikes.indexOf(username)==-1 &&comment.flags.indexOf(username)==-1 ){
+	if(userid && userid!=comment.author.id && comment.likes.indexOf(userid)==-1 &&comment.dislikes.indexOf(userid)==-1 &&comment.flags.indexOf(userid)==-1 ){
 	
 		commenthtml+='<div class="comment-rating-links comment-rating-links-'+com+ '">';
 	
@@ -80,7 +80,7 @@ function createCommentHTML(comment){
 
 function loadCommentSection(article){
 	loadComments(article, 1, COMMENT_DIV);
-	paginateComments(article, COMMENT_PAGE_DIV);
+	paginateComments(article, COMMENT_PAGE_DIV, COMMENT_DIV);
 	createNewCommentButton(article, NEW_COMMENT_DIV);
 	
 }
@@ -240,7 +240,7 @@ function createNewCommentForm(article,div,target){
 	var htmlstring = '<div class="comment_warning"></div><form method="POST" target="#" class="new_comment_post">';
 	htmlstring += '<a name="reply"></a>';
 	if(target && target != "")
-		htmlstring += 'Reply to '+commentList[target].author+':<br/>';
+		htmlstring += 'Reply to '+commentList[target].author.name+':<br/>';
 			
 	htmlstring += '<textarea class="comment_text_area" maxlength=300/>';
 	htmlstring += '<input type="submit" class="new_comment_submit" value="Post Comment">';
@@ -316,8 +316,62 @@ function createNewCommentButton(article,div){
 	});
 }
 
-function paginateComments(article, div){
+function paginateComments(article, div, comment_div){
+	$.ajax(APIURL+'/comments/'+article+'/count',{'success':function(data){
+		if(data && data.count){
+			max_comment_page = data.count;
+			
+			function PaginateComments(){
+				var p = $(this).attr('data-page');
+				current_comment_page = p;
+				loadComments(article,p,comment_div);
+				createCommentPagination(max_comment_page);
+				return false;
+			}
+			
+			function createCommentPagination(c){
+				var navstring = '<tr>';
+				for(var i = 1; i<=c && i<=3; i++){
+						
+					navstring+='<td><a href="#" class="commentpage ' +(i==current_comment_page?'current_page':'')+' cp'+i+'" data-page="'+i+'">'+i+'</a></td>';
+					
+				}
+				
+				
+				if(current_comment_page>5){
+					navstring+='<td>...</td>';
+				}
+				for(var i = (current_comment_page-1>3?current_comment_page-1:3); i<=current_comment_page+1 && i<=c; i++){
+						
+					navstring+='<td><a href="#" class="commentpage ' +(i==current_comment_page?'current_page':'')+' cp'+i+'" data-page="'+i+'">'+i+'</a></td>';
+					
+				}
+				
+				if(current_comment_page<c-4){
+					navstring+='<td>...</td>';
+				}
+				for(var i = (current_comment_page+2>c-2?current_comment_page+2:c-2); i<=c; i++){
+						
+					navstring+='<td><a href="#" class="commentpage ' +(i==current_comment_page?'current_page':'')+' cp'+i+'" data-page="'+i+'">'+i+'</a></td>';
+					
+				}
+				
+				
+				
+				navstring+='</tr>';
+				
+				$(div).html('<table>'+navstring+'</table>');
+				
+				
+				$('.commentpage').on('click',PaginateComments);
+			}
+			if(max_comment_page!=1)
+				createCommentPagination(max_comment_page);
 	
+		}
+	},error:function(){
+		
+	}});
 }
 
 function howLongAgoString(time){
