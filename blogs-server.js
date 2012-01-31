@@ -5,7 +5,7 @@ var KEY =keys.serverkey;
 var IDENTITYSERVER = {"host":"127.0.0.1", "port":4000};
 
 
-var http = require('http');
+var https = require('https');
 var express = require('express');
 var mongodb = require('mongodb');
 
@@ -16,7 +16,7 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	if(error) throw error;
 	
 	function validateUser(token, callback){
-		http.get({host:IDENTITYSERVER.host,port:IDENTITYSERVER.port,path:"/validate/"+token+"/"+KEY}, function(res){
+		https.get({host:IDENTITYSERVER.host,port:IDENTITYSERVER.port,path:"/validate/"+token+"/"+KEY}, function(res){
 			var user = "";
 			res.on('data', function(data) {
 				user+=data;

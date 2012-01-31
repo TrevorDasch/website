@@ -1,5 +1,5 @@
 
-var loginUrl = "http://"+document.domain+":4000";
+var loginUrl = "https://"+document.domain+":4000";
 var token = null;
 var username;
 var userid;

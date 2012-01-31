@@ -22,6 +22,10 @@ var mongodb = require('mongodb');
 var crypto = require('crypto');
 var https = require('https');
 
+var fs = require('fs');
+
+var privateKey = fs.readFileSync(__dirname+'/privatekey.pem').toString();
+var certificate = fs.readFileSync(__dirname+'/certificate.pem').toString();
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
@@ -94,7 +98,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		});
 	}
 			
-	var app = express.createServer();
+	var app = express.createServer({key:privateKey, cert: certificate});
 	
 	app.use(express.bodyParser());
 	
