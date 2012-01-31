@@ -24,8 +24,9 @@ var https = require('https');
 
 var fs = require('fs');
 
-var privateKey = fs.readFileSync(__dirname+'/privatekey.pem').toString();
-var certificate = fs.readFileSync(__dirname+'/certificate.pem').toString();
+var privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
+var certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
+var chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
@@ -98,7 +99,7 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		});
 	}
 			
-	var app = express.createServer({key:privateKey, cert: certificate});
+	var app = express.createServer({key:privateKey, cert: certificate, ca: chain});
 	
 	app.use(express.bodyParser());
 	
