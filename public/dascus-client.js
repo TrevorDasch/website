@@ -1,7 +1,7 @@
 var COMMENT_DIV = ".comments";
 var COMMENT_PAGE_DIV= ".comment_pagination";
 var NEW_COMMENT_DIV = ".new_comment";
-var APIURL = "http://"+document.domain+':3000';
+var APIURL = "https://"+document.domain+':3000';
 
 
 var current_comment_page = 1;
@@ -118,7 +118,8 @@ function loadComments(article, page, comment_div){
 	if(!page)
 		page = 1;
 	$.ajax(APIURL+'/comments/'+article+'/'+page,{'success':function(data){
-		
+		if(data && typeof data == "string")
+			data = JSON.parse(data);	
 		function populateCommentList(comments){
 			for(var c in comments){
 				commentList[c] = comments[c];
@@ -183,6 +184,8 @@ function loadComments(article, page, comment_div){
 			if(!token)
 				return;
 			$.ajax(APIURL+'/like/'+article+'/'+id, {type:'post',headers:{"Authorization":token}, success:function(data){
+				if(!data["_id"])
+					data = JSON.parse(data);
 				$('.comment-'+data["_id"]).html(createCommentHTML(data));
 				display(id,commentList[id].children,5,'.subcomments-'+id);
 			}, error: function(){
@@ -197,6 +200,8 @@ function loadComments(article, page, comment_div){
 			if(!token)
 				return;
 			$.ajax(APIURL+'/dislike/'+article+'/'+id, {type:'post',headers:{"Authorization":token}, success:function(data){
+				if(!data["_id"])
+					data = JSON.parse(data);
 				$('.comment-'+data["_id"]).html(createCommentHTML(data));
 				display(id,commentList[id].children,5,'.subcomments-'+id);
 			}, error: function(){
@@ -211,6 +216,8 @@ function loadComments(article, page, comment_div){
 			if(!token)
 				return;
 			$.ajax(APIURL+'/flag/'+article+'/'+id, {type:'post',headers:{"Authorization":token}, success:function(data){
+				if(!data["_id"])
+					data = JSON.parse(data);
 				$('.comment-'+data["_id"]).html(createCommentHTML(data));
 				display(id,data.children,5,'.subcomments-'+id);
 			}, error: function(){
@@ -293,6 +300,9 @@ function createNewCommentForm(article,div,target){
 			opt += "/"+target;
 		
 		$.ajax(APIURL+"/comment/"+article+opt,{type:'post',headers:{"Authorization":token},contentType:'application/json', data:JSON.stringify({text:text}), success: function(data){
+			if(data && typeof data == "string")
+				data = JSON.parse(data);			
+
 			if(!data || data.error){
 				$('.comment_warning').html('<span class="warning_text">'+data.error+'</span>');
 				return;
@@ -346,6 +356,8 @@ function createNewCommentButton(article,div){
 
 function paginateComments(article, div, comment_div){
 	$.ajax(APIURL+'/comments/'+article+'/count',{'success':function(data){
+		if(data && typeof data == "string")
+			data = JSON.parse(data);
 		if(data && data.count){
 			max_comment_page = data.count;
 			

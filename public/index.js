@@ -5,7 +5,7 @@ var currentSection = 'home';
 var currentAbout = 'resume';
 var actionActive = false;
 
-var blogUrl = "http://"+document.domain;
+var blogUrl = "https://"+document.domain;
 
 $(document).ready(function(){
 	
@@ -58,7 +58,8 @@ $(document).ready(function(){
 
 function CreateBlogNav(){
 	$.ajax({type:"GET",url:blogUrl+'/count',  success: function(data){
-	
+		if(data && typeof data == "string")
+			data = JSON.parse(data);	
 		if(!data || data.error)
 			return;
 		
@@ -99,6 +100,9 @@ function CreateBlogNav(){
 
 function LoadBlog(page){
 	$.ajax({type:"GET",url:blogUrl+'/blog/'+page, success: function(data){
+		if(data && typeof data == "string")
+			data = JSON.parse(data);
+
 		if(!data || data.error){
 			
 		$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
@@ -392,6 +396,8 @@ function createEditBlog(){
 		}
 		
 		$.ajax(blogUrl+"/blog/"+currentBlog["_id"],{type:'put',headers:{"Authorization":token},contentType:'application/json', data:JSON.stringify({text:text,title:title}), success: function(data){
+			if(data && typeof data == "string")
+				data = JSON.parse(data);
 			if(!data || data.error){
 				$('.blog_warning').html('<span class="warning_text">'+data.error+'</span>');
 				return;
@@ -449,6 +455,8 @@ function createNewBlog(){
 		}
 		
 		$.ajax(blogUrl+"/blog",{type:'post',headers:{"Authorization":token},contentType:'application/json', data:JSON.stringify({text:text,title:title}), success: function(data){
+			if(data && typeof data == "string")
+				data = JSON.parse(data);
 			if(!data || data.error){
 				$('.blog_warning').html('<span class="warning_text">'+data.error+'</span>');
 				return;

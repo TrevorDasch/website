@@ -53,7 +53,8 @@ function createLoginRegisterBox(domloc){
 			console.log('Welcome!  Fetching your information.... ');
 	 
 			$.ajax(loginUrl+'/loginfacebook',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"oAuth":response.authResponse}),'success':function(data){
-				
+				if(!data.token)
+					data = JSON.parse(data);	
 				token = data.token;
 				admin = data.admin;
 				
@@ -138,7 +139,10 @@ function createLoginRegisterBox(domloc){
 				var password = $('.login-password').val();
 				
 				$.ajax(loginUrl+'/login',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"email":email,"password":password}),'success':function(data){
-					
+					if(!data.token)
+	                                        data = JSON.parse(data);
+
+						
 					token = data.token;
 					admin = data.admin;
 					username = data.username;
@@ -198,6 +202,10 @@ function createLoginRegisterBox(domloc){
 				var email = $('.register-email').val();
 				
 				$.ajax(loginUrl+'/register',{'type':'POST','crossDomain':true,'contentType':'application/json','data':JSON.stringify({"username":username,"password":password,"email":email}),'success':function(data){
+					if(!data.token)
+	                                        data = JSON.parse(data);
+					
+
 					token = data.token;
 					username = data.username;
 					userid = data.id;

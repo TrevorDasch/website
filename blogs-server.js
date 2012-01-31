@@ -9,6 +9,20 @@ var https = require('https');
 var express = require('express');
 var mongodb = require('mongodb');
 
+
+var fs = require('fs');
+
+var privateKey = fs.readFileSync(__dirname+'/privatekey.pem').toString();
+var certificate = fs.readFileSync(__dirname+'/certificate.pem').toString();
+
+var redirector = express.createServer();
+
+redirector.get("/*", function(req, res){
+	res.redirect("https://www.trevordasch.com");
+});
+
+redirector.listen(80);
+
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
 
@@ -35,7 +49,7 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		});
 	}
 	
-	var app = express.createServer();
+	var app = express.createServer({key:privateKey, cert:certificate});
 	
 	app.use(express.bodyParser());
 	
@@ -220,7 +234,7 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	});
 	
 	
-	app.listen(80);
+	app.listen(443);
 	
 });
 
