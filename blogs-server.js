@@ -270,10 +270,10 @@ function bbReplace(str){
 	str = str.replace(new RegExp(regex,'g'),replacement);
 
 	bb = 'youtube';
-	htmls = 'iframe class=youtube-player type=text/html width=512 height=”378 src=';
+	htmls = 'iframe class=youtube-player type=text/html width=512 height=378 src=';
 	htmle ='iframe';
 
-	var regex = '\\['+bb+'\\]([^\\["]*)(v=|\\/)([^\\[\\/])\\[\\/'+bb+'\\]';
+	var regex = '\\['+bb+'\\]([^\\["]*)(v=|\\/)([^\\[\\/]*)\\[\\/'+bb+'\\]';
 	var replacement = '<'+htmls+'$3></'+htmle+'>';
 
 	str = str.replace(new RegExp(regex,'g'),replacement);
