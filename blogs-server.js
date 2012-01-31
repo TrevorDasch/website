@@ -274,7 +274,7 @@ function bbReplace(str){
 	htmle ='iframe';
 
 	var regex = '\\['+bb+'\\]([^\\["]*)(v=|\\/)([^\\[\\/]*)\\[\\/'+bb+'\\]';
-	var replacement = '<'+htmls+'$3></'+htmle+'>';
+	var replacement = '<'+htmls+'http://www.youtube.com/embed/$3></'+htmle+'>';
 
 	str = str.replace(new RegExp(regex,'g'),replacement);
 
