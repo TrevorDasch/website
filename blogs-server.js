@@ -29,14 +29,14 @@ if(prod){
 
 	proto = https;
 
-	var redirector = express.createServer();
+/*	var redirector = express.createServer();
 
 	redirector.get("/*", function(req, res){
 		res.redirect("https://www.trevordasch.com");
 	});
 
 	redirector.listen(80);
-
+*/
 }
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
