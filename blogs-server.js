@@ -1,10 +1,14 @@
+var prod = true;
+if(process.argv.length==3 && process.argv[2]=="dev")
+	prod = false;
+
 var keys = require(__dirname+'/keys.json');
 
 var KEY =keys.serverkey;
 
 var IDENTITYSERVER = {"host":"127.0.0.1", "port":4000};
 
-
+var http = require('http');
 var https = require('https');
 var express = require('express');
 var mongodb = require('mongodb');
@@ -12,17 +16,28 @@ var mongodb = require('mongodb');
 
 var fs = require('fs');
 
-var privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
-var certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
-var chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
+var privateKey;
+var certificate;
+var chain;
 
-var redirector = express.createServer();
 
-redirector.get("/*", function(req, res){
-	res.redirect("https://www.trevordasch.com");
-});
+var proto = http;
+if(prod){
+	privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
+	certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
+	chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
 
-redirector.listen(80);
+	proto = https;
+
+	var redirector = express.createServer();
+
+	redirector.get("/*", function(req, res){
+		res.redirect("https://www.trevordasch.com");
+	});
+
+	redirector.listen(80);
+
+}
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
@@ -31,7 +46,7 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 	if(error) throw error;
 	
 	function validateUser(token, callback){
-		https.get({host:IDENTITYSERVER.host,port:IDENTITYSERVER.port,path:"/validate/"+token+"/"+KEY}, function(res){
+		proto.get({host:IDENTITYSERVER.host,port:IDENTITYSERVER.port,path:"/validate/"+token+"/"+KEY}, function(res){
 			var user = "";
 			res.on('data', function(data) {
 				user+=data;
@@ -50,7 +65,11 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		});
 	}
 	
-	var app = express.createServer({key:privateKey, cert:certificate, ca: chain});
+	var app;
+	if(prod)
+		app = express.createServer({key:privateKey, cert:certificate, ca: chain});
+	else 
+		app =express.createServer();
 	
 	app.use(express.bodyParser());
 	
@@ -234,8 +253,10 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		res.sendfile(__dirname+'/public/'+req.params[0]);	
 	});
 	
-	
-	app.listen(443);
+	if(prod)
+		app.listen(443);
+	else
+		app.listen(80);
 	
 });
 

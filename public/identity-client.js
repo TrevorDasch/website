@@ -1,5 +1,9 @@
 
-var loginUrl = "https://"+document.domain+":4000";
+var loginUrl;
+if(document.domain.indexOf('trevordasch.com')!=-1)
+	loginUrl = "https://"+document.domain+":4000";
+else
+	loginUrl = "http://"+document.domain+":4000";
 var token = null;
 var username;
 var userid;

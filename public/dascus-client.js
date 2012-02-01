@@ -1,8 +1,12 @@
 var COMMENT_DIV = ".comments";
 var COMMENT_PAGE_DIV= ".comment_pagination";
 var NEW_COMMENT_DIV = ".new_comment";
-var APIURL = "https://"+document.domain+':3000';
 
+var APIURL;
+if(document.domain.indexOf('trevordasch.com')!=-1)
+	APIURL = "https://"+document.domain+":3000";
+else
+	APIURL = "http://"+document.domain+":3000";
 
 var current_comment_page = 1;
 var max_comment_page = 1;

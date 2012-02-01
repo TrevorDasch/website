@@ -1,3 +1,7 @@
+var prod = true;
+if(process.argv.length==3 && process.argv[2]=="dev")
+	prod = false;
+
 var keys = require(__dirname+'/keys.json');
 
 var KEY =keys.serverkey;
@@ -20,7 +24,7 @@ var RANKS = [
 
 
 
-
+var http = require('http');
 var https = require('https');
 var express = require('express');
 var mongodb = require('mongodb');
@@ -28,10 +32,18 @@ var mongodb = require('mongodb');
 
 var fs = require('fs');
 
-var privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
-var certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
-var chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
+var privateKey;
+var certificate;
+var chain;
 
+var proto = http;
+if(prod){
+	privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
+	certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
+	chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
+
+	proto = https;
+}
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
@@ -40,7 +52,9 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 	if(error) throw error;
 	
 	function validateUser(token, callback){
-		https.get({host:IDENTITYSERVER.host,port:IDENTITYSERVER.port,path:"/validate/"+token+"/"+KEY}, function(res){
+		
+		
+		proto.get({host:IDENTITYSERVER.host,port:IDENTITYSERVER.port,path:"/validate/"+token+"/"+KEY}, function(res){
 			var user = "";
 			res.on('data', function(data) {
 				user+=data;
@@ -62,8 +76,12 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		}).on('error',function(e){});
 	}
 		
-	var app = express.createServer({key:privateKey, cert:certificate, ca: chain});
-	
+	var app;
+	if(prod)
+		app = express.createServer({key:privateKey, cert:certificate, ca: chain});
+	else 
+		app =express.createServer();
+		
 	app.use(express.bodyParser());
 	
 	app.all("/*", function(req,res,next){
@@ -83,9 +101,9 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 	
 	app.get('/comments/:article/count', function(req, res){
 		
-		var comments = new mongodb.Collection(client, req.params.article+'_comments');
+		var comments = new mongodb.Collection(client, 'comments');
 
-		comments.count({"root_comment":null},function(err,count){
+		comments.count({"article":req.params.article,"root_comment":null},function(err,count){
 			var response = {};
 			response.count = Math.ceil(count/PAGESIZE);
 			res.send(response);
@@ -99,10 +117,10 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 		if(req.params.page)
 			page = (req.params.page);
 		
-		var comments = new mongodb.Collection(client, req.params.article+'_comments');
+		var comments = new mongodb.Collection(client,'comments');
 
 	
-		comments.find({"root_comment":null}).sort({score:-1,date:-1}).limit(PAGESIZE).skip(PAGESIZE*(page-1)).toArray(function(err, items){
+		comments.find({"article":req.params.article,"root_comment":null}).sort({score:-1,date:-1}).limit(PAGESIZE).skip(PAGESIZE*(page-1)).toArray(function(err, items){
 			
 			var response = {};
 			
@@ -181,8 +199,9 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			comment.likecount =0;
 			comment.dislikecount = 0;
 			comment.flagcount =0;
+			comment.article = req.params.article;
 			
-			var comments = new mongodb.Collection(client, req.params.article+'_comments');
+			var comments = new mongodb.Collection(client, 'comments');
 
 			
 			if(!req.params['parent_comment']){
@@ -256,7 +275,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			var comments = new mongodb.Collection(client, req.params.article+'_comments');
+			var comments = new mongodb.Collection(client,'comments');
 
 			comments.findOne({"_id":id},function(err,comment){		
 			
@@ -311,7 +330,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			}
 			
 			
-			var comments = new mongodb.Collection(client, req.params.article+'_comments');
+			var comments = new mongodb.Collection(client, 'comments');
 
 			comments.findOne({"_id":id},function(err,comment){		
 			
@@ -354,7 +373,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			var comments =new mongodb.Collection(client, req.params.article+'_comments');
+			var comments =new mongodb.Collection(client, 'comments');
 				
 			comments.findOne({"_id":id},function(err, doc){
 				if(err || !doc){
@@ -407,7 +426,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			var comments =new mongodb.Collection(client, req.params.article+'_comments');
+			var comments =new mongodb.Collection(client,'comments');
 			
 			comments.findOne({"_id":id},function(err, doc){
 				if(err || !doc){
@@ -462,7 +481,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 				return;
 			}
 			
-			var comments =new mongodb.Collection(client, req.params.article+'_comments');
+			var comments =new mongodb.Collection(client,'comments');
 			
 			comments.findOne({"_id":id},function(err, doc){
 				if(err || !doc){

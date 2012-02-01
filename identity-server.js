@@ -1,3 +1,7 @@
+var prod = true;
+if(process.argv.length==3 && process.argv[2]=="dev")
+	prod = false;
+
 var keys = require(__dirname+'/keys.json');
 
 var SERVERKEY =keys.serverkey;
@@ -24,9 +28,17 @@ var https = require('https');
 
 var fs = require('fs');
 
-var privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
-var certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
-var chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
+var privateKey;
+var certificate;
+var chain;
+
+if(prod){
+	privateKey = fs.readFileSync(__dirname+'/ssl/www.trevordasch.com.key').toString();
+	certificate = fs.readFileSync(__dirname+'/ssl/trevordasch.crt').toString();
+	chain = fs.readFileSync(__dirname+'/ssl/gdbundle.crt').toString();
+
+
+}
 
 var server = new mongodb.Server("127.0.0.1", 27017, {});
 
@@ -99,8 +111,13 @@ new mongodb.Db('identity', server, {}).open(function (error, client) {
 		});
 	}
 			
-	var app = express.createServer({key:privateKey, cert: certificate, ca: chain});
-	
+	var app;
+	if(prod)
+		app = express.createServer({key:privateKey, cert:certificate, ca: chain});
+	else 
+		app =express.createServer();
+		
+		
 	app.use(express.bodyParser());
 	
 	app.all("/*", function(req,res,next){
