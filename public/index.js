@@ -75,7 +75,6 @@ function clickSection(){
 		return false;
 		
 	var cls = $(this).attr('data-section');
-	openSection(cls);
 }
 
 function openSection(sec){
@@ -103,7 +102,8 @@ function openSection(sec){
 			SlideOne(finishAbout);
 		}
 		else{
-			finishAbout();
+			actionActive = false;
+			return;
 		}
 		
 		$('.home-section').hide('slow');
@@ -123,7 +123,8 @@ function openSection(sec){
 			SlideOne(finishBlog);
 		}
 		else{
-			finishBlog();
+			actionActive= false;
+			return;
 		}
 		
 		$('.home-section').hide('slow');
@@ -143,7 +144,8 @@ function openSection(sec){
 			SlideOne(finishHome);
 		}
 		else{
-			finishHome();
+			actionActive = false;
+			return;
 		}
 		$('.home-section').show('slow');
 		$('.about-section').hide('slow');
