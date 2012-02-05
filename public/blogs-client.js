@@ -31,7 +31,7 @@ function CreateBlogNav(){
 			}
 			if(col==1)
 				navstring+='<tr>';
-			navstring+='<td><a href="#" class="blogpage ' +(i==currentPage?'current_page':'')+' bp'+i+'" data-page="'+i+'">'+i+'</a></td>';
+			navstring+='<td><a href="#!blog-'+i+'" class="blogpage ' +(i==currentPage?'current_page':'')+' bp'+i+'" data-page="'+i+'">'+i+'</a></td>';
 			col++;
 		}
 		navstring+='</tr>';

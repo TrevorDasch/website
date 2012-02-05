@@ -3,6 +3,7 @@ var currentSection = 'home';
 var currentAbout = 'resume';
 var actionActive = false;
 
+var pageFromURL = 1;
 
 
 $(document).ready(function(){
@@ -31,7 +32,7 @@ $(document).ready(function(){
 	
 	
 	CreateBlogNav();
-	LoadBlog(1);
+	LoadBlog(pageFromURL);
 	
 	if(admin){
 		$('.new_blog_link_spot').html('<a href="#" class="new_blog_link">Create a new blog entry</a>');
@@ -54,6 +55,13 @@ $(document).ready(function(){
 
 });
 
+window.onhashchange = function(){
+	loadSection();
+	LoadBlog(pageFromURL);
+        $('.current_page').removeClass('current_page');
+        $('.bp'+pageFromURL).addClass('current_page');
+}
+
 function loadSection(){
 	var url = window.location.href;
 
@@ -72,6 +80,16 @@ function clickSection(){
 
 function openSection(sec){
 	actionActive =true;
+	
+	if(sec.indexOf('-')!=-1){
+		var splitsec = sec.split('-');
+		sec = splitsec[0];
+		pageFromURL = parseInt(splitsec[1]);
+		if(pageFromURL <= 0)
+			pageFromURL = 1;
+	}
+
+
 	switch(sec){
 	case 'about':
 		if(currentSection=='home'){

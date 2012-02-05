@@ -135,6 +135,15 @@ a, a:hover, a:active, a:visited{
 	outline: none;
 }
 
+a:hover{
+        color: gray;
+        font-style: none;
+        text-decoration: none;
+        font-weight: normal;
+        outline: none;
+
+}
+
 a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
     outline: none;
 }
