@@ -109,15 +109,18 @@ function Draw(){
     context.rect(0, 0, canvas.width, canvas.height);
     context.fillStyle = "black";
     context.fill();
+	var startWidth = 0;
     
 	for(var i =0; i<width; i++){
+		
+		wedgeWidth = (canvas.width<canvas.height?canvas.width:canvas.height)*.48 * ((.05* Math.pow(.8, i)) + .75/width);
 		for(var j =0; j< height; j++){
 			if(Current[i][j]){
 				context.beginPath();
-				context.arc(centerX, centerY, (i)*wedgeWidth, (j+1)*arcLength, j*arcLength, true);
-				context.lineTo(centerX+Math.cos(j*arcLength)*((i+1)*wedgeWidth),centerY+Math.sin(j*arcLength)*((i+1)*wedgeWidth))
-				context.arc(centerX, centerY, (i+1)*wedgeWidth, j*arcLength, (j+1)*arcLength, false);
-				context.lineTo(centerX+Math.cos((j+1)*arcLength)*(i*wedgeWidth),centerY+Math.sin((j+1)*arcLength)*(i*wedgeWidth))
+				context.arc(centerX, centerY, startWidth, (j+1)*arcLength, j*arcLength, true);
+				context.lineTo(centerX+Math.cos(j*arcLength)*(startWidth+wedgeWidth),centerY+Math.sin(j*arcLength)*(startWidth+wedgeWidth))
+				context.arc(centerX, centerY, startWidth+wedgeWidth, j*arcLength, (j+1)*arcLength, false);
+				context.lineTo(centerX+Math.cos((j+1)*arcLength)*(startWidth),centerY+Math.sin((j+1)*arcLength)*(startWidth))
 				context.closePath();
 				context.fillStyle = "#18CAE6"; // line color
 				context.lineWidth = 2;
@@ -126,6 +129,7 @@ function Draw(){
 				context.stroke();
 			}
 		}
+		startWidth += wedgeWidth;
 	}
 }
 

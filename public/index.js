@@ -23,7 +23,7 @@ $(document).ready(function(){
 		});
 	});
 	
-	StartGame(16,20);
+	StartGame(20,24);
 	
 	
 	createLoginRegisterBox('.identity');
