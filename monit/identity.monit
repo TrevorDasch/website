@@ -4,7 +4,6 @@ set logfile /var/log/monit.log
 check process nodejs with pidfile "/var/run/identity.pid"
     start program = "/sbin/start identity"
     stop program  = "/sbin/stop identity"
-    if failed port 4000 protocol HTTP
-        request /monit
+    if failed port 4000 protocol HTTPS
         with timeout 10 seconds
         then restart

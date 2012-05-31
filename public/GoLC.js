@@ -107,7 +107,7 @@ function Draw(){
     
     context.beginPath();
     context.rect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = "black";
+    context.fillStyle = "#EEEEEE";
     context.fill();
 	var startWidth = 0;
     
@@ -122,10 +122,10 @@ function Draw(){
 				context.arc(centerX, centerY, startWidth+wedgeWidth, j*arcLength, (j+1)*arcLength, false);
 				context.lineTo(centerX+Math.cos((j+1)*arcLength)*(startWidth),centerY+Math.sin((j+1)*arcLength)*(startWidth))
 				context.closePath();
-				context.fillStyle = "#18CAE6"; // line color
+				context.fillStyle = "#111111"; // line color
 				context.lineWidth = 2;
 				context.fill();
-				context.strokeStyle = "black";
+				context.strokeStyle = "EEEEEE";
 				context.stroke();
 			}
 		}

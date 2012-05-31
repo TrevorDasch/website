@@ -7,6 +7,7 @@
 		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
 		<link href="style.css" rel="stylesheet" type="text/css"/>
 		<!--<link href="tweet/jquery.tweet.css" media="all" rel="stylesheet" type="text/css"/>-->
+		<link href='http://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
 		<script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 		<script language="javascript" src="tweet/jquery.tweet.js" type="text/javascript"></script> 
 		<script language="javascript" src="identity-client.js" type="text/javascript"></script>
@@ -17,7 +18,7 @@
 	</head>
 	<body>
 		<div id="fb-root"></div>
-		<div class="main">
+		<div class="main_wrapper">
 			<div class="header">
 				<div class="largecircle"></div>
 				<div class="titlebar">
@@ -40,132 +41,138 @@
 				<div class="cleardiv"></div>
 			</div>
 			
-			<div class="home-section">
-				<canvas id="myCanvas" width="880px" height="600px"></canvas>
-			</div>
-			
-			
-			<div class="blog-section">
-				<div class="content">
-					<div class="new_blog_link_spot"></div>					
-					<div class="blog">
-					</div>
+			<div class="main">
+				
+				
+				<div class="home-section">
+					<canvas id="myCanvas" width="880px" height="600px"></canvas>
 				</div>
-				<div class="sidebar">
-					<div class="identity"></div>
-					<div class="blognav"></div>
-					<div class="tweet_wrapper">
-						<div class="tweet_header">
-							<h2>Tweets by <a href="http://twitter.com/TrevorDasch">TrevorDasch</a></h2>
+				
+				
+				<div class="blog-section">
+					<div class="content">
+						<div class="new_blog_link_spot"></div>					
+						<div class="blog">
 						</div>
-						<div class="tweet"></div>
+					</div>
+					<div class="sidebar">
+						<div class="identity"></div>
+						<div class="blognav"></div>
+						<div class="tweet_wrapper">
+							<div class="tweet_header">
+								<h2>Tweets by <a href="http://twitter.com/TrevorDasch">TrevorDasch</a></h2>
+							</div>
+							<div class="tweet"></div>
+						</div>
 					</div>
 				</div>
-			</div>
-			
-			<div class="about-section">				
-					<div class="about">
-						<div class="blog_post">
-							<div class="aboutbar">
-								<div class="about_link_slider">
-									<div class="about_link_wrapper about_link_resume">
-										<div class="mediumcircle"></div>
-										<h2><a class="about_link about_link_selected" data-section="resume" href="#!about">Resume</a></h2>
-									</div>
-									<div class="about_link_wrapper about_link_about">
-										<h2><a class="about_link" data-section="about" href="#!about">About Me</a></h2>
+				
+				<div class="about-section">				
+						<div class="about">
+							<div class="blog_post">
+								<div class="aboutbar">
+									<div class="about_link_slider">
+										<div class="about_link_wrapper about_link_resume">
+											<div class="mediumcircle"></div>
+											<h2><a class="about_link about_link_selected" data-section="resume" href="#!about">Resume</a></h2>
+										</div>
+										<div class="about_link_wrapper about_link_about">
+											<h2><a class="about_link" data-section="about" href="#!about">About Me</a></h2>
+										</div>
 									</div>
 								</div>
-							</div>
-							
-							<div class="cleardiv"></div>
-							<div class="about_body">
-								<p>
-									I am a software developer working for GameSpy Technology.
-									I currently reside in San Francisco, California.
-								</p><p>
-									I enjoy playing video games, board games and card games. 
-									I also like watching tv and movies, as well as listening to music.
-									Here are a few of my favorite things:
-								</p>
-								<h3>Books</h3>
-								<p> A Song of Ice and Fire, most of Orson Scott Card's writing (though I don't agree with a lot of his beliefs.), Harry Potter. I have Nathanael West's Day of the Locust and Stephen King's The Stand sitting on my shelf waiting for the end of time when I finally will have enough free time to read.
-								</p>
-								<h3>Comics</h3><p> Watchmen, Y the Last Man and Scott Pilgrim. Not really into superheroes (except maybe Batman).
-								</p>
-								<h3>Directors</h3><p> Stanley Kubrick, Hayao Miyazaki, Quentin Tarantino, David Lynch, Martin Scorsese, David Fincher, Christopher Nolan, Guy Ritchie.
-								</p>
-								<h3>Movies</h3><p> Indiana Jones, Star Wars (original trilogy), The Matrix, In Bruges, Oldboy, The Terminator, Scott Pilgrim, Army of Darkness, District 9, Moon, Wayne's World, Robocop, The Big Lebowski.
-								</p>
-								<h3>TV Shows</h3><p> Arrested Development, Seinfeld, Firefly, The West Wing, 30 Rock, Archer, Mad Men, Always Sunny in Philadelphia, Lost, Psych, Fullmetal Alchemist, Bleach, Battlestar Galactica, Buffy, Angel, Twin Peaks.
-								</p>
-								<h3>Music</h3>
-								<p> Bob Dylan, Pink Floyd, David Bowie, Led Zeppelin, Black Keys, The Shins, Gorillaz, Cage the Elephant, Metric, Nine Inch Nails, Smashing Pumpkins, Radiohead, Rolling Stones, Pixies, Portishead, Massive Attack, The Beatles. 
-								</p>
-								<h3>Games</h3>
-								<p> Zelda, Bioshock, Metroid Prime, Golden Sun, Halo, Battlefield, Devil May Cry.
-								</p>
-							</div>
-							
-					
-							<div class="resume_body">
-								<h3>Contact Info</h3>
-								<p>
+								
+								<div class="cleardiv"></div>
+								<div class="about_body">
+									<p>
+										I am a software developer working for GameSpy Technology.
+										I currently reside in San Francisco, California.
+									</p><p>
+										I enjoy playing video games, board games and card games. 
+										I also like watching tv and movies, as well as listening to music.
+										Here are a few of my favorite things:
+									</p>
+									<h3>Books</h3>
+									<p> A Song of Ice and Fire, most of Orson Scott Card's writing (though I don't agree with a lot of his beliefs.), Harry Potter. I have Nathanael West's Day of the Locust and Stephen King's The Stand sitting on my shelf waiting for the end of time when I finally will have enough free time to read.
+									</p>
+									<h3>Comics</h3><p> Watchmen, Y the Last Man and Scott Pilgrim. Not really into superheroes (except maybe Batman).
+									</p>
+									<h3>Directors</h3><p> Stanley Kubrick, Hayao Miyazaki, Quentin Tarantino, David Lynch, Martin Scorsese, David Fincher, Christopher Nolan, Guy Ritchie.
+									</p>
+									<h3>Movies</h3><p> Indiana Jones, Star Wars (original trilogy), The Matrix, In Bruges, Oldboy, The Terminator, Scott Pilgrim, Army of Darkness, District 9, Moon, Wayne's World, Robocop, The Big Lebowski.
+									</p>
+									<h3>TV Shows</h3><p> Arrested Development, Seinfeld, Firefly, The West Wing, 30 Rock, Archer, Mad Men, Always Sunny in Philadelphia, Lost, Psych, Fullmetal Alchemist, Bleach, Battlestar Galactica, Buffy, Angel, Twin Peaks.
+									</p>
+									<h3>Music</h3>
+									<p> Bob Dylan, Pink Floyd, David Bowie, Led Zeppelin, Black Keys, The Shins, Gorillaz, Cage the Elephant, Metric, Nine Inch Nails, Smashing Pumpkins, Radiohead, Rolling Stones, Pixies, Portishead, Massive Attack, The Beatles. 
+									</p>
+									<h3>Games</h3>
+									<p> Zelda, Bioshock, Metroid Prime, Golden Sun, Halo, Battlefield, Devil May Cry.
+									</p>
+								</div>
+								
+						
+								<div class="resume_body">
+									<h3>Contact Info</h3>
+									<p>
+										<table>
+											<tr><td>Email:</td><td><a href="mailto:tdasch@ign.com">tdasch@ign.com</a></td></tr>
+											<tr><td>LinkedIn:</td><td><a href="http://www.linkedin.com/pub/trevor-dasch/37/137/87a">Trevor Dasch</a></td></tr>
+											<tr><td>Twitter:</td><td><a href="http://twitter.com/TrevorDasch">TrevorDasch</a></td></tr>
+										</table>
+									</p>
+									<h3>Experience</h3>
+									<p>
+										GameSpy Technology    -   Associate Software Developer
+										Duties: Work on matchmaking and networking services 		for the Unity framework.
+										<br/>September 2011 – Present
+									</p><p>
+
+										University of Dayton   -	Teaching Assistant
+										Duties: Grade homework and test for Systems Programming and Comparative Languages courses.
+										<br/>September 2010 – May 2011
+									</p><p>
+										JP Morgan Chase &amp; Co.	 -	Intern Analyst
+										Duties: Execute SIT and UAT testing for the automation of VSI provisioning, and assist in the validation of VM reporting software.	
+										<br/>June 2010 – August 2010
+									</p>
+									<h3>Education</h3><p>
+									University of Dayton, Dayton, OH 42409
+									Bachelor of Science, Magna Cum Laude, May 2011
 									<table>
-										<tr><td>Email:</td><td><a href="mailto:tdasch@ign.com">tdasch@ign.com</a></td></tr>
-										<tr><td>LinkedIn:</td><td><a href="http://www.linkedin.com/pub/trevor-dasch/37/137/87a">Trevor Dasch</a></td></tr>
-										<tr><td>Twitter:</td><td><a href="http://twitter.com/TrevorDasch">TrevorDasch</a></td></tr>
+										<tr><td>Major:</td><td>Computer Science</td></tr>
+										<tr><td>Minor:</td><td>Mathematics</td></tr>
+										<tr><td>GPA:</td><td>3.88/4.0</td></tr>
+										<tr><td>Major Course Work:</td><td><ul>
+											<li>Operating Systems</li><li>Computer Graphics</li>
+											<li>Data Structures</li><li>User Interface Design</li>
+											<li>AI</li><li>Computer Organization</li></ul></td></tr>
+										
 									</table>
-								</p>
-								<h3>Experience</h3>
-								<p>
-									GameSpy Technology    -   Associate Software Developer
-									Duties: Work on matchmaking and networking services 		for the Unity framework.
-									<br/>September 2011 – Present
-								</p><p>
+									<h3>Activities and Honors</h3>
+									<ul>
+										<li>National Merit Finalist </li><li> National AP Scholar</li>
+										<li>Undergraduate Research in AI</li><li>Film Club</li>
+										<li>National Society for Collegiate Scholars</li>
+										<li>International Collegiate Programming Contest</li>
+										<li>Thomas Schoen Award for Innovative Programming</li>
+									</ul>
 
-									University of Dayton   -	Teaching Assistant
-									Duties: Grade homework and test for Systems Programming and Comparative Languages courses.
-									<br/>September 2010 – May 2011
-								</p><p>
-									JP Morgan Chase &amp; Co.	 -	Intern Analyst
-									Duties: Execute SIT and UAT testing for the automation of VSI provisioning, and assist in the validation of VM reporting software.	
-									<br/>June 2010 – August 2010
-								</p>
-								<h3>Education</h3><p>
-								University of Dayton, Dayton, OH 42409
-								Bachelor of Science, Magna Cum Laude, May 2011
-								<table>
-									<tr><td>Major:</td><td>Computer Science</td></tr>
-									<tr><td>Minor:</td><td>Mathematics</td></tr>
-									<tr><td>GPA:</td><td>3.88/4.0</td></tr>
-									<tr><td>Major Course Work:</td><td><ul>
-										<li>Operating Systems</li><li>Computer Graphics</li>
-										<li>Data Structures</li><li>User Interface Design</li>
-										<li>AI</li><li>Computer Organization</li></ul></td></tr>
-									
-								</table>
-								<h3>Activities and Honors</h3>
-								<ul>
-									<li>National Merit Finalist </li><li> National AP Scholar</li>
-									<li>Undergraduate Research in AI</li><li>Film Club</li>
-									<li>National Society for Collegiate Scholars</li>
-									<li>International Collegiate Programming Contest</li>
-									<li>Thomas Schoen Award for Innovative Programming</li>
-								</ul>
+									<h3>Computer Skills</h3>
+									<p>Databases: MySQL, CouchDB, MongoDB</p>
+									<p>Frameworks: Node.js, Unity, Scalatra</p>
+									<p>Languages: C, C++, Java, C#, Javascript, Scala, Objective-C, PHP, Lua</p>
 
-								<h3>Computer Skills</h3>
-								<p>Databases: MySQL, CouchDB, MongoDB</p>
-								<p>Frameworks: Node.js, Unity, Scalatra</p>
-								<p>Languages: C, C++, Java, C#, Javascript, Scala, Objective-C, PHP, Lua</p>
-
-								<h3>References Available Upon Request</h3>
+									<h3>References Available Upon Request</h3>
+								</div>
 							</div>
 						</div>
-					</div>
+				</div>
+				
+				<div class="cleardiv"></div>
 			</div>
-			
-			<div class="footer">Copyright 2011 by Trevor Dasch. All Rights Reserved.</div>
+
+			<div class="footer">Copyright 2011 by Trevor Dasch. All Rights Reserved.</div>			
 		</div>
 	</body>
 </html>

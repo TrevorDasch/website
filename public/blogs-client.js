@@ -84,7 +84,7 @@ function CreateBlogHTML(blogPost){
 	htmlstring += '<div class="blog_date">'+howLongAgoString(Date.parse(blogPost.date))+'</div>';
 	htmlstring += '<div class="blog_body">'+ blogPost.html + '</div></div>';
 
-	htmlstring += '<div class="comment_wrapper"><h3 class="comment_header">Comments</h3><div class="new_comment"></div><div class="comments"></div><div class="comment_pagination"></div></div>';
+	htmlstring += '<div class="comment_wrapper"><h3 class="comment_header">Comments</h3><div class="new_comment"></div><div class="comments"></div></div><div class="comment_pagination"></div>';
 	return htmlstring;
 }
 

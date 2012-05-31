@@ -235,6 +235,7 @@ function loadComments(article, page, comment_div){
 		$('.reply').live('click',function(){
 			var id = $(this).attr('data-comment');
 			createNewCommentForm(article,NEW_COMMENT_DIV, id);
+			return false;
 		});
 		
 			
@@ -274,8 +275,77 @@ function loadComments(article, page, comment_div){
 	}});
 }
 
-function createNewCommentForm(article,div,target){
+function createEditCommentForm(article,div,target){
 
+	var htmlstring = '<div class="comment_warning"></div><form method="POST" target="#" class="edit_comment_post">';
+	htmlstring += '<a name="edit"></a>';
+	htmlstring += 'Edit your post:<br/>';
+			
+	htmlstring += '<textarea class="comment_text_area" maxlength=300 value=""/>';
+	htmlstring += '<input type="submit" class="new_comment_submit" value="Update Comment">';
+	htmlstring += '<input type="button" class="new_comment_cancel" value="Cancel">';
+	htmlstring+= '<div class="cleardiv"></div></form>';
+
+	$(div).html(htmlstring);
+	$(".comment_text_area").val(commentList[target].text);
+	
+	$('.edit_comment_post').submit(function(){
+		if(!token){
+			$('.comment_warning').html('<span class="warning_text">Must be logged in to comment.</span>');
+			return false;			
+		}
+		
+		var text = $('.comment_text_area').val();
+		if(!text){
+			$('.comment_warning').html('<span class="warning_text">Comments can\'t be empty</span>');
+			return false;			
+		}
+		var opt = "";
+		if(target && target != "")
+			opt += "/"+target;
+		
+		$.ajax(APIURL+"/comment/"+article+opt,{type:'put',headers:{"Authorization":token},contentType:'application/json', data:JSON.stringify({text:text}), success: function(data){
+			if(data && typeof data == "string")
+				data = JSON.parse(data);			
+
+			if(!data || data.error){
+				$('.comment_warning').html('<span class="warning_text">'+data.error+'</span>');
+				return;
+			}
+				
+			var com = data["_id"];
+			$('.comment-'+com).html(createCommentHTML(data));
+			commentList[com] = data;
+
+			createNewCommentButton(article,div)
+		}, error:function(jqxhr){
+			//console.log(jqxhr);
+			if(jqxhr.responseText){
+				var resp = JSON.parse(jqxhr.responseText);
+				if(resp && resp.error){
+					$('.comment_warning').html('<span class="warning_text">'+resp.error+'</span>');
+				}
+			}
+		}});
+		
+		return false;
+	});
+	
+	$('.new_comment_cancel').click(function(){
+		createNewCommentButton(article, NEW_COMMENT_DIV);
+		return false;
+	});
+}
+
+function createNewCommentButton(article,div){
+	$(div).html('<a href="#" class="new_comment_link">Post a new Comment</a>');
+	$('.new_comment_link').click(function(){
+		createNewCommentForm(article,div);
+		return false;
+	});
+}
+
+function createNewCommentForm(article,div,target){
 	var htmlstring = '<div class="comment_warning"></div><form method="POST" target="#" class="new_comment_post">';
 	htmlstring += '<a name="reply"></a>';
 	if(target && target != "")
@@ -350,13 +420,7 @@ function createNewCommentForm(article,div,target){
 	});
 }
 
-function createNewCommentButton(article,div){
-	$(div).html('<a href="#" class="new_comment_link">Post a new Comment</a>');
-	$('.new_comment_link').click(function(){
-		createNewCommentForm(article,div);
-		return false;
-	});
-}
+
 
 function paginateComments(article, div, comment_div){
 	$.ajax(APIURL+'/comments/'+article+'/count',{'success':function(data){

@@ -90,7 +90,7 @@ new mongodb.Db('dascus', server, {}).open(function (error, client) {
 			res.header("Access-Control-Allow-Origin",origin);
 		res.header("Access-Control-Allow-Headers",["Content-Type","Authorization"]);
 		
-		res.header("Access-Control-Allow-Methods","DELETE");
+		res.header("Access-Control-Allow-Methods",["DELETE","PUT"]);
 		res.contentType("application/json");
 		next();
 	});
