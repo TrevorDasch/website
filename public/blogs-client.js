@@ -355,7 +355,7 @@ function CreateMiniTweetHTML(tweet){
 		link = "https://"+link;
 	
 	
-	var htmlstring = '<div class="twitter_triangle"></div><a href="'+link+'" class="mini_tweet">';
+	var htmlstring = '<div class="twitter_triangle"><img class="twitter_icon" src="twitter-icon.png"/></div><a href="'+link+'" class="mini_tweet">';
 	
 	htmlstring += tweet.text.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>');
 	if(image){
@@ -368,12 +368,12 @@ function CreateMiniTweetHTML(tweet){
 }
 
 function CreateMiniBlogHTML(blogPost){
-	var htmlstring = '<div class="blog_triangle"></div><a href="#!blog='+blogPost["_id"]+'" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
+	var htmlstring = '<div class="blog_triangle"><img class="blog_icon" src="blog-icon.png"/></div><a href="#!blog='+blogPost["_id"]+'" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
 		
-	htmlstring += '<div class="mini_blog_title"><h2>'+blogPost.title+'</h2></div>';
-	htmlstring += '<div class="cleardiv"></div>';
-	htmlstring += '<div class="mini_blog_date">'+howLongAgoString(Date.parse(blogPost.date))+'</div>';
-	htmlstring += '<div class="mini_blog_body">'+ blogPost.html.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>'); + '</div></a>';
+	htmlstring += '<span class="mini_blog_title"><h2>'+blogPost.title+'</h2></span>';
+	htmlstring += '<span class="cleardiv"></span>';
+	htmlstring += '<span class="mini_blog_date">'+howLongAgoString(Date.parse(blogPost.date))+'</span>';
+	htmlstring += '<span class="mini_blog_body">'+ blogPost.html.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>'); + '</span></a>';
 	return htmlstring;
 }
 

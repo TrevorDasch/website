@@ -41,21 +41,37 @@ a, a:hover, a:active, a:visited{
 .blog_triangle{
 	width:0px;
 	height:0px;
-	position:relative;
-	border-top: 10px solid green;
-	border-left: 10px solid green;
-	border-bottom: 10px solid transparent;
-	border-right: 10px solid transparent;
+	position: absolute;
+	border-top: 16px solid green;
+	border-left: 16px solid green;
+	border-bottom: 16px solid transparent;
+	border-right: 16px solid transparent;
+}
+
+.blog_icon{
+	position: absolute;
+	top: -14px;
+	left: -14px;
+	width: 16px;
+	height: 16px;
 }
 
 .twitter_triangle{
 	width:0px;
 	height:0px;
-	position:relative;
-	border-top: 10px solid #4099FF;
-	border-left: 10px solid #4099FF;
-	border-bottom: 10px solid transparent;
-	border-right: 10px solid transparent;	
+	position: absolute;
+	border-top: 16px solid #00aced;
+	border-left: 16px solid #00aced;
+	border-bottom: 16px solid transparent;
+	border-right: 16px solid transparent;	
+}
+
+.twitter_icon{
+	position: absolute;
+	top: -14px;
+	left: -14px;
+	width: 16px;
+	height: 16px;
 }
 
 
@@ -92,14 +108,17 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 }
 
 .mini_blog_post, .mini_tweet{
-	width: 90%;
-	height: 90%;
+	position: absolute;
 	display: block;
+	margin: 16px 10px 10px 16px;
+	bottom: 0;
+	top: 0;
+	left: 0; 
+	right: 0;
 	overflow: hidden;
-	text-overflow:ellipsis;
-	margin: 10px;
-
+	text-overflow:ellipsis;	
 }
+
 
 .mini_blog_post img, .mini_tweet img{
 	display: block;
@@ -107,7 +126,7 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 	padding: 10px;
 }
 
-.tweet_time{ display: block;
+.tweet_time, .mini_blog_date{ display: block;
 	
 }
 
