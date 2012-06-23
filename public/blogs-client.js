@@ -130,7 +130,7 @@ function LoadMiniBlogs(page, pageSize){
 			data = JSON.parse(data);
 
 		if(!data || data.error){
-			BLOGSLOADED = true;
+			AddBlogsToGrid([]);	
 			return;
 		}
 		
@@ -141,7 +141,7 @@ function LoadMiniBlogs(page, pageSize){
 		AddBlogsToGrid(data);
 		
 	}, error:function(){
-		BLOGSLOADED = true;
+		AddBlogsToGrid([]);
 		return;
 	}});
 	
