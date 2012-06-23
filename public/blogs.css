@@ -8,18 +8,18 @@ html, body {
 	background-image:
 		-webkit-gradient(linear, left top, right bottom,
 			from(transparent),
-			color-stop(0.01, transparent),
-			color-stop(0.01,white),
+			color-stop(0.02, transparent),
+			color-stop(0.02,white),
 	
-			color-stop(0.49, white),
-			color-stop(0.49, transparent),
-			color-stop(0.51, transparent),
-			color-stop(0.51,white),
+			color-stop(0.48, white),
+			color-stop(0.48, transparent),
+			color-stop(0.52, transparent),
+			color-stop(0.52,white),
 
-			color-stop(0.99, white),
-			color-stop(0.99, transparent),			
+			color-stop(0.98, white),
+			color-stop(0.98, transparent),			
 			to(transparent));
-	ffbackground-color: white;
+	ffbackground-color: gray;
 	-webkit-background-size: 10px 10px;
 
   
