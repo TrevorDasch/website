@@ -7,9 +7,6 @@ if(document.domain.indexOf('trevordasch.com')!=-1)
 else
 	blogUrl = "http://"+document.domain;
 
-var blogData = [];
-var tweetData = [];
-
 function CreateBlogNav(){
 	$.ajax({type:"GET",url:blogUrl+'/count',  success: function(data){
 		if(data && typeof data == "string")
@@ -53,7 +50,7 @@ function CreateBlogNav(){
 
 
 function LoadBlog(page){
-	$.ajax({type:"GET",url:blogUrl+'/blogs/'+page, success: function(data){
+	$.ajax({type:"GET",url:blogUrl+'/blog/'+page, success: function(data){
 		if(data && typeof data == "string")
 			data = JSON.parse(data);
 
@@ -63,9 +60,9 @@ function LoadBlog(page){
 			return;
 		}
 		
-		$('.blog').html(CreateBlogHTML(data[0]));
+		$('.blog').html(CreateBlogHTML(data));
 		
-		currentBlog = data[0];
+		currentBlog = data;
 		
 		loadCommentSection(currentBlog["_id"]);
 		
@@ -76,236 +73,8 @@ function LoadBlog(page){
 }
 
 
-function LoadMiniBlogs(page, pageSize){
-		$.ajax({type:"GET",url:blogUrl+'/blogs/'+page+'?pagesize='+pageSize, success: function(data){
-		if(data && typeof data == "string")
-			data = JSON.parse(data);
-
-		if(!data || data.error){
-			BLOGSLOADED = true;
-			return;
-		}
-		
-		for(var bl in data){
-			blogData.push(data[bl]);
-		}
-		
-		AddBlogsToGrid(data);
-		
-	}, error:function(){
-		BLOGSLOADED = true;
-		return;
-	}});
-	
-}
-
-var GridEl = ".thegrid";
-var CurrentPage = 1;
-
-function CreateGrid(gridEl){
-	GridEl = gridEl;
-	LoadMiniBlogs(1, 10);
-	LoadTweets(1, 10);
-}
-
-function LoadMoreGrid(){
-	
-	if(TWEETSLOADED && BLOGSLOADED){
-		CurrentPage++;
-
-		TWEETSLOADED = false;
-		BLOGSLOADED = false;
-		LoadMiniBlogs(CurrentPage, 10);
-		LoadTweets(CurrentPage, 10);
-	}
-}
-
-function LoadTweets(page,pageSize){
-	jQuery(function($){
-		$(".tweet").tweet({
-			username: "TrevorDasch",
-			count: pageSize,
-			page: page,
-			loading_text: "loading tweets..."
-		});
-	});
-
-}
-
-var TWEETSLOADED = false;
-var BLOGSLOADED = false;
-
-function AddBlogsToGrid(blogs){
-	console.log(blogs);
-	BLOGSLOADED = true;
-	if(TWEETSLOADED){
-		FillGrid();
-	}
-}
-
-function AddTweetsToGrid(tweets){
-	console.log(tweets);
-	for(var t in tweetData){
-		if(tweetData[t].tweet_time == tweets[0].tweet_time)
-			return;
-	}
-	
-	for(var t in tweets){
-		tweetData.push(tweets[t]);
-	}
-	TWEETSLOADED = true;
-	if(BLOGSLOADED){
-		FillGrid();
-	}
-}
-
-var W, H;
-window.onresize = function(event) {
-	//if(W != Math.floor((window.innerWidth-15)/210))
-		FillGrid();
-}
-
-function FillGrid(){
-	var Wid = window.innerWidth;
-	var Hei = window.innerHeight;
-	
-	W = Math.floor((Wid-15)/210);
-	
-	H = Math.floor((Hei-40)/210);
-
-	var items = blogData.length + tweetData.length;
-	
-	var area = W*H;
-	while(area < items*2){
-		H++;
-		area = W*H;
-	}
-	
-	
-	var Grid = [];
-	for(var i = 0; i< W; i++){
-		Grid.push([]);
-		for(var j = 0; j<H; j++){
-			Grid[i].push(0);
-		}
-	}
-	
-	var htmls=[];
-	var insertions = [];
-	
-	for(var i = 0; i< blogData.length || i< tweetData.length; i++){
-		if(i<blogData.length)
-			htmls.push(CreateMiniBlogHTML(blogData[i]));
-		if(i<tweetData.length)
-			htmls.push(CreateMiniTweetHTML(tweetData[i]));
-	}
-	
-	function AttemptInsertion(index, w, h){
-		
-		for(var y = 0; y < H-h+1; y++){
-			for(var x = 0; x< W-w+1; x++){
-				
-				var good = true;
-				for(var i = x; i<x+w; i++){
-					for(var j = y; j<y+h; j++){
-						if(Grid[i][j]!=0){
-							good = false;
-							break;
-						}
-					}
-						if(!good)
-							break;
-				}
-				if(!good)
-					continue;
-					
-				for(var i = x; i<x+w; i++){
-					for(var j = y; j<y+h; j++){
-						Grid[i][j]=1;
-					}
-				}
-				
-				insertions.push({html:htmls[index], x:x, y:y, w:w, h:h});
-				htmls.splice(index,1);
-				area-=w*h;
-				items--;
-				return true;
-			}
-		}
-		return false;
-	}
-	var h = 0;
-	while(htmls.length>0 && area >0){
-		if((Math.random()<0.7 +(htmls[h].length/1000) - 0.2*area/(W*H) && htmls[h].indexOf("<img")==-1) || 6+items < area || !AttemptInsertion(h,3,2)){
-			if((Math.random()<0.5 +(htmls[h].length/1000) - 0.2*area/(W*H) && htmls[h].indexOf("<img")==-1) || 4+items > area || !AttemptInsertion(h,2,2)){
-				if(Math.random()<0.3 +(htmls[h].length/1000) - 0.2*area/(W*H) || 2+items > area || !AttemptInsertion(h,2,1) && ! AttemptInsertion(h,1,2)){
-					AttemptInsertion(h,1,1);
-				}	
-			}
-		}
-	}
-	
-	$(GridEl).html('');
-	for(var i in insertions){
-		$(GridEl).append('<div class="grid_item grid-h-'+insertions[i].h+' grid-w-'+insertions[i].w+'" style="position:absolute;top:'+
-			(insertions[i].y*210+50)+'px;left:'+(insertions[i].x*210 + ((window.innerWidth-18)%210) /2)+'px;">'+insertions[i].html + '</div>');
-	}
-	
-	$(GridEl).append('<div class="more_link_bar" style="width:'+((W-1)*210)+'px;position:absolute;top:'+
-			(H*210+60)+'px;left:'+(100+((window.innerWidth-18)%210) /2)+'px;" ><a href="#" class="more_link">Load More</a></div>');
-
-	$('.more_link').click(function(){
-		LoadMoreGrid();
-		return false;
-	});
-
-}
-
-
-
-function CreateMiniTweetHTML(tweet){
-	
-	var link = tweet.tweet_url;
-	
-	var image = null;
-	var imgx, imgy;
-	if(tweet.entities.length >0){
-		if(tweet.entities[0].type == "photo"){
-			image = tweet.entities[0].media_url_https;
-			imgx = tweet.entities[0].sizes.small.w;
-			imgx = tweet.entities[0].sizes.small.h;
-		}
-		if(tweet.entities[0].display_url)
-			link = tweet.entities[0].display_url;
-	}
-	if(link.indexOf("http")==-1)
-		link = "https://"+link;
-	
-	
-	var htmlstring = '<a href="'+link+'" class="mini_tweet">';
-	
-	htmlstring += tweet.text.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>');
-	if(image){
-		htmlstring += '<img src="'+image+'" width="'+imgx+'" height="'+imgy+'"/>';
-	}
-
-	htmlstring += tweet.time.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>');;
-	htmlstring += '</a>';
-	return htmlstring;
-}
-
-function CreateMiniBlogHTML(blogPost){
-	var htmlstring = '<a href="#!blog" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
-		
-	htmlstring += '<div class="mini_blog_title"><h2>'+blogPost.title+'</h2></div>';
-	htmlstring += '<div class="cleardiv"></div>';
-	htmlstring += '<div class="mini_blog_date">'+howLongAgoString(Date.parse(blogPost.date))+'</div>';
-	htmlstring += '<div class="mini_blog_body">'+ blogPost.html + '</div></a>';
-	return htmlstring;
-}
-
 function CreateBlogHTML(blogPost){
-	var htmlstring = '<div class="blog_post" data-blog="'+blogPost["_id"]+'">';
+	var htmlstring = '<div class="blog_post" data-blog="'+blogPost["_id"]+'"><div class="mediumcircle"></div>';
 		
 	htmlstring += '<div class="blog_title"><h2>'+blogPost.title+'</h2></div><div class="blog_edit_link_spot">'
 	if(admin) 

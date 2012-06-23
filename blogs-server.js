@@ -87,23 +87,46 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		res.send('{"success":true}');
 	});
 	
-	app.get('/blog/:page?', function(req, res){
+	app.get('/blogs/:page?', function(req, res){
 		
 		res.contentType('application/json');
 		
+		var pageSize = (req.query && req.query['pagesize']?req.query['pagesize']:1);
 		var page = 1;
 		if(req.params.page)
 			page = req.params.page;
 		var blogs = new mongodb.Collection(client, 'blogs');
 			
-		blogs.find().sort({date:-1}).skip(page-1).limit(1).toArray(function(err,docs){
+		blogs.find().sort({date:-1}).skip((page-1)*pageSize).limit(pageSize).toArray(function(err,docs){
 			if(err || docs.length==0)
 				res.send('{"error":"no blog found on this page"}',400);
 			else
-				res.send(docs[0]);
+				res.send(docs);
 		});
 		
 		
+	});
+
+	app.get('/blog/:id', function(req, res){
+		
+		res.contentType('application/json');
+		
+		var blogs = new mongodb.Collection(client, 'blogs');
+		var id;
+		try{
+			id = new mongodb.ObjectID(req.params.id);
+		}catch(e){
+			res.send('{"error":"invalid blog"}',400);
+			return;
+		}
+		
+		blogs.findOne({"_id":id},function(err,doc){
+			if(err ||!doc){
+				res.send('{"error":"invalid blog"}',400);
+				return;
+			}
+			res.send(doc);
+		});	
 	});
 	
 	app.get('/count', function(req, res){
@@ -247,6 +270,17 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		res.contentType("index.html");
 		res.sendfile(__dirname+'/public/index.html');
 	});
+
+	app.get('/updates',function(req,res){
+		res.contentType("updates.html");
+		res.sendfile(__dirname+'/public/updates.html');
+	});
+
+	app.get('/about',function(req,res){
+                res.contentType("about.html");
+                res.sendfile(__dirname+'/public/about.html');
+        });
+
 
 	app.get('/*',function(req,res){
 		res.contentType(req.params[0]);
