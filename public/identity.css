@@ -6,7 +6,7 @@
 .cleardiv{float:none; clear:both;}
 
 
-h1, h2, h3 {
+h1, h2, h3, h4 {
 	font-family: gnuTypewriter, verdana, helvetica, sans-serif; 
 
 }
@@ -22,6 +22,26 @@ h1, h2, h3 {
 a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
     outline: none;
 }
+
+input[type=text],textarea,input[type=textfield],input[type=password]{
+
+	background-color: white;
+
+	color: black;
+	border: 1px solid green;
+	padding: 3px;
+}
+
+input[type=button],input[type=submit]{
+	color: white;
+
+	background-color: black;
+	border: 1px solid green;
+	padding: 5px;
+	margin: 0px 10px;
+	float: right;
+}
+
 
 .header a:hover{
         color: green;
@@ -45,12 +65,13 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 .identity_drop_down{
 	display:none;
 	position: fixed;
-	right: 0;
-	top: 30px;
+	right: 100px;
+	top: 29px;
 	width: 300px;
 	z-index: 1;
 	background-color: black;
 	padding: 10px;
+	border: 1px solid green;
 }
 
 
@@ -76,6 +97,9 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 	height: 30px;
 }
 
+.logout-link{
+	margin-left: 20px;
+}
 
 
 

@@ -78,15 +78,20 @@ function createLoginRegisterBox(domloc, domlocdd){
 					if(admin){
 						setCookie("token",token+"&"+username+"&"+userid+"&admin",30);
 						
-						if(createAdminPage)
+						try{
 							createAdminPage();
+						}catch(e){
+							console.log(e);
+						}
 					}
 					else
 						setCookie("token",token+"&"+username+"&"+userid,30);
 						
-					if(refreshBlog)
+					try{
 						refreshBlog();
-					
+					}catch(e){
+						console.log(e);
+					}
 					
 					createWelcomeLogoutBox(domloc,domlocdd);
 					
@@ -108,14 +113,14 @@ function createLoginRegisterBox(domloc, domlocdd){
 		
 		
 		
-		$(domloc).html('<a href="#" class="identity_drop_down_link">login &uarr;</a>');
+		$(domloc).html('<a href="#" class="identity_drop_down_link">Login &uarr;</a>');
 		$('.identity_drop_down_link').click(function(){
 			$(domlocdd).toggle();
 			if($(domlocdd).css('display') == 'none'){
-				$('.identity_drop_down_link').html('login &uarr;');
+				$('.identity_drop_down_link').html('Login &uarr;');
 			}
 			else {
-				$('.identity_drop_down_link').html('login &darr;');
+				$('.identity_drop_down_link').html('Login &darr;');
 			}
 			return false;
 		});
@@ -174,15 +179,20 @@ function createLoginRegisterBox(domloc, domlocdd){
 						if(admin){
 							setCookie("token",token+"&"+username+"&"+userid+"&admin",30);
 							
-							if(createAdminPage)
+							try{
 								createAdminPage();
+							}catch(e){
+								console.log(e);
+							}
 						}
 						else
 							setCookie("token",token+"&"+username+"&"+userid,30);
 							
-						if(refreshBlog)
+						try{
 							refreshBlog();
-						
+						}catch(e){
+							console.log(e);
+						}
 						
 						createWelcomeLogoutBox(domloc,domlocdd);
 						
@@ -234,8 +244,11 @@ function createLoginRegisterBox(domloc, domlocdd){
 						username = data.username;
 						userid = data.id;
 						setCookie("token",token+"&"+username+"&"+userid,30);
-						if(refreshBlog)
+						try{
 							refreshBlog();
+						}catch(e){
+							console.log(e);
+						}
 						
 						createWelcomeLogoutBox(domloc,domlocdd);
 						
@@ -276,10 +289,16 @@ function createWelcomeLogoutBox(domloc, domlocdd){
 		token = null;
 		setCookie("token","",-1);
 		admin = false;
-		if(refreshBlog)
+		try{
 			refreshBlog();
-		if(removeAdminPage)
+		}catch(e){
+			console.log(e);
+		}
+		try{
 			removeAdminPage();
+		}catch(e){
+			console.log(e);
+		}
 		createLoginRegisterBox(domloc,domlocdd);
 		return false;
 	});

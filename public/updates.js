@@ -14,7 +14,8 @@ $(document).ready(function(){
 	
 	CreateGrid('.thegrid');
 	
-	//LoadBlog(pageFromURL);
+	if(pageFromURL)
+		LoadBlog(pageFromURL);
 	//CreateBlogNav();
 	
 	if(admin){
@@ -31,14 +32,25 @@ $(document).ready(function(){
 		return false;
 	});
 	
+	$('.return_to_grid_link').live('click',function(){
+		$('.blog-section').hide();
+		$('.thegrid').show();
+	});
+	
 
 });
 
 window.onhashchange = function(){
 	loadSection();
-	LoadBlog(pageFromURL);
+	if(pageFromURL){
+		LoadBlog(pageFromURL);
         $('.current_page').removeClass('current_page');
         $('.bp'+pageFromURL).addClass('current_page');
+	}else{
+		$('.blog-section').hide();
+		$('.thegrid').show();
+		
+	}
 }
 
 function loadSection(){
@@ -46,7 +58,12 @@ function loadSection(){
 
 	var sec = '';
 	sec = url.substr(url.indexOf('!')+1);
-
+	
+	if(sec.indexOf('blog=')==0){
+		pageFromURL = sec.substring(5);
+	}
+	else
+		pageFromURL = null;
 }
 
 

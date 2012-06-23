@@ -53,26 +53,74 @@ function CreateBlogNav(){
 
 
 function LoadBlog(page){
-	$.ajax({type:"GET",url:blogUrl+'/blogs/'+page, success: function(data){
-		if(data && typeof data == "string")
-			data = JSON.parse(data);
-
-		if(!data || data.error){
-			
-		$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
-			return;
+	
+	if(isNaN(page)){
+		
+		for(var i in blogData){
+			if(page == blogData[i]["_id"]){
+				currentBlog = blogData[i];
+				
+				$('.blog').html(CreateBlogHTML(currentBlog));
+				
+				loadCommentSection(currentBlog["_id"]);
+				
+				$('.blog-section').show();
+				$(GridEl).hide();
+				
+			}
 		}
 		
-		$('.blog').html(CreateBlogHTML(data[0]));
-		
-		currentBlog = data[0];
-		
-		loadCommentSection(currentBlog["_id"]);
-		
-	}, error:function(){
-		$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
-		return;
-	}});
+		$.ajax({type:"GET",url:blogUrl+'/blog/'+page, success: function(data){
+			if(data && typeof data == "string")
+				data = JSON.parse(data);
+
+			if(!data || data.error){
+				
+			$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
+				return;
+			}
+			
+			$('.blog').html(CreateBlogHTML(data));
+			
+			currentBlog = data;
+			
+			loadCommentSection(currentBlog["_id"]);
+			
+			$('.blog-section').show();
+			$(GridEl).hide();
+				
+			
+		}, error:function(){
+			$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
+			return;
+		}});
+	}
+	else{	
+		$.ajax({type:"GET",url:blogUrl+'/blogs/'+page, success: function(data){
+			if(data && typeof data == "string")
+				data = JSON.parse(data);
+
+			if(!data || data.error){
+				
+			$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
+				return;
+			}
+			
+			$('.blog').html(CreateBlogHTML(data[0]));
+			
+			currentBlog = data[0];
+			
+			loadCommentSection(currentBlog["_id"]);
+			
+			$('.blog-section').show();
+			$(GridEl).hide();
+				
+			
+		}, error:function(){
+			$('.blog').html('<div class="blog_post"><div class="blog_body">No blogs are available</div></div>');	
+			return;
+		}});
+	}
 }
 
 
@@ -161,8 +209,16 @@ function AddTweetsToGrid(tweets){
 
 var W, H;
 window.onresize = function(event) {
-	//if(W != Math.floor((window.innerWidth-15)/210))
+	if(W != Math.floor((window.innerWidth-15)/210))
 		FillGrid();
+	else{
+		$('.grid_item').each(function(){
+			
+			$(this).css({
+				'left': '+='+  ((((window.innerWidth-18)%210) /2) - (parseInt($(this).css('left'))%210)) + 'px'
+			});
+		});
+	}
 }
 
 function FillGrid(){
@@ -236,9 +292,26 @@ function FillGrid(){
 	}
 	var h = 0;
 	while(htmls.length>0 && area >0){
-		if((Math.random()<0.7 +(htmls[h].length/1000) - 0.2*area/(W*H) && htmls[h].indexOf("<img")==-1) || 6+items < area || !AttemptInsertion(h,3,2)){
-			if((Math.random()<0.5 +(htmls[h].length/1000) - 0.2*area/(W*H) && htmls[h].indexOf("<img")==-1) || 4+items > area || !AttemptInsertion(h,2,2)){
-				if(Math.random()<0.3 +(htmls[h].length/1000) - 0.2*area/(W*H) || 2+items > area || !AttemptInsertion(h,2,1) && ! AttemptInsertion(h,1,2)){
+		if(		(Math.random()<0.7 +(htmls[h].length/1000) - 0.2*area/(W*H) 
+					&& htmls[h].indexOf("<img")==-1 
+					&& items!=1) 
+				|| 5+items > area 
+				|| !AttemptInsertion(h,3,2)){
+			if(		(Math.random()<0.5 +(htmls[h].length/1000) - 0.2*area/(W*H) 
+						&& htmls[h].indexOf("<img")==-1 
+						&& items!=1) 
+					|| 3+items > area 
+					|| !AttemptInsertion(h,2,2)){
+				var ord = Math.random() > 0.5;		
+				if(		(Math.random()<0.3 +(htmls[h].length/1000) - 0.2*area/(W*H) 
+							&& items!=1)
+						|| 1+items > area 
+						|| (ord 
+							&& (!AttemptInsertion(h,2,1) 
+								&& !AttemptInsertion(h,1,2))) 
+						|| (!ord 
+							&& (!AttemptInsertion(h,1,2) 
+								&& !AttemptInsertion(h,2,1)) )){
 					AttemptInsertion(h,1,1);
 				}	
 			}
@@ -295,7 +368,7 @@ function CreateMiniTweetHTML(tweet){
 }
 
 function CreateMiniBlogHTML(blogPost){
-	var htmlstring = '<div class="blog_triangle"></div><a href="#!blog" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
+	var htmlstring = '<div class="blog_triangle"></div><a href="#!blog='+blogPost["_id"]+'" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
 		
 	htmlstring += '<div class="mini_blog_title"><h2>'+blogPost.title+'</h2></div>';
 	htmlstring += '<div class="cleardiv"></div>';
