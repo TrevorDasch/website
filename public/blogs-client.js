@@ -282,7 +282,7 @@ function CreateMiniTweetHTML(tweet){
 		link = "https://"+link;
 	
 	
-	var htmlstring = '<a href="'+link+'" class="mini_tweet">';
+	var htmlstring = '<div class="twitter_triangle"></div><a href="'+link+'" class="mini_tweet">';
 	
 	htmlstring += tweet.text.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>');
 	if(image){
@@ -295,7 +295,7 @@ function CreateMiniTweetHTML(tweet){
 }
 
 function CreateMiniBlogHTML(blogPost){
-	var htmlstring = '<a href="#!blog" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
+	var htmlstring = '<div class="blog_triangle"></div><a href="#!blog" class="mini_blog_post" data-blog="'+blogPost["_id"]+'">';
 		
 	htmlstring += '<div class="mini_blog_title"><h2>'+blogPost.title+'</h2></div>';
 	htmlstring += '<div class="cleardiv"></div>';
