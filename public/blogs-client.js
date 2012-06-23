@@ -373,7 +373,7 @@ function CreateMiniBlogHTML(blogPost){
 	htmlstring += '<div class="mini_blog_title"><h2>'+blogPost.title+'</h2></div>';
 	htmlstring += '<div class="cleardiv"></div>';
 	htmlstring += '<div class="mini_blog_date">'+howLongAgoString(Date.parse(blogPost.date))+'</div>';
-	htmlstring += '<div class="mini_blog_body">'+ blogPost.html + '</div></a>';
+	htmlstring += '<div class="mini_blog_body">'+ blogPost.html.replace(/<a /g,'<span ').replace(/<\/a>/g,'</span>'); + '</div></a>';
 	return htmlstring;
 }
 
