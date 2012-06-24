@@ -232,16 +232,16 @@ function FillGrid(){
 	var items = blogData.length + tweetData.length;
 	
 	var area = W*H;
-	while(area < items*2){
-		H++;
+	if(area < items*2){
+		H=Math.ceil(items*2/W);
 		area = W*H;
 	}
 	
 	
 	var Grid = [];
-	for(var i = 0; i< W; i++){
+	for(var i = 0; i< H; i++){
 		Grid.push([]);
-		for(var j = 0; j<H; j++){
+		for(var j = 0; j<W; j++){
 			Grid[i].push(0);
 		}
 	}
@@ -262,8 +262,8 @@ function FillGrid(){
 			for(var x = 0; x< W-w+1; x++){
 				
 				var good = true;
-				for(var i = x; i<x+w; i++){
-					for(var j = y; j<y+h; j++){
+				for(var i = y; i<y+h; i++){
+					for(var j = x; j<x+w; j++){
 						if(Grid[i][j]!=0){
 							good = false;
 							break;
@@ -275,8 +275,8 @@ function FillGrid(){
 				if(!good)
 					continue;
 					
-				for(var i = x; i<x+w; i++){
-					for(var j = y; j<y+h; j++){
+				for(var i = y; i<y+h; i++){
+					for(var j = x; j<x+w; j++){
 						Grid[i][j]=1;
 					}
 				}
@@ -291,19 +291,28 @@ function FillGrid(){
 		return false;
 	}
 	var h = 0;
-	while(htmls.length>0 && area >0){
-		if(		(Math.random()<0.7 +(htmls[h].length/10000) - 2*area/(W*H*items) 
+	while(htmls.length>0 && area >0 && items>0){
+		if(area/items < 1.3 && items > W){
+			Grid.push([]);
+			for(var i = 0; i< W; i++){
+				Grid[H].push(0);
+			}
+			H++;
+			area+= W;
+		}
+		var myRand = Math.random();
+		if(		(myRand<1 -(htmls[h].length/3000) 
 					&& htmls[h].indexOf("<img src")==-1 
 					&& items!=1) 
 				|| 5+items > area 
 				|| !AttemptInsertion(h,3,2)){
-			if(		(Math.random()<0.5 +(htmls[h].length/10000) - 2*area/(W*H*items) 
+			if(		(myRand<0.8 -(htmls[h].length/3000) 
 						&& htmls[h].indexOf("<img src")==-1 
 						&& items!=1) 
 					|| 3+items > area 
 					|| !AttemptInsertion(h,2,2)){
 				var ord = Math.random() > 0.5;		
-				if(		(Math.random()<0.3 +(htmls[h].length/10000) - 2*area/(W*items*H) 
+				if(		(myRand<0.6 -(htmls[h].length/3000) 
 							&& items!=1)
 						|| 1+items > area 
 						|| (ord 
