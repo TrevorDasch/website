@@ -292,18 +292,18 @@ function FillGrid(){
 	}
 	var h = 0;
 	while(htmls.length>0 && area >0){
-		if(		(Math.random()<0.7 +(htmls[h].length/1000) - 0.2*area/(W*H) 
-					&& htmls[h].indexOf("<img")==-1 
+		if(		(Math.random()<0.7 +(htmls[h].length/10000) - 2*area/(W*H*items) 
+					&& htmls[h].indexOf("<img src")==-1 
 					&& items!=1) 
 				|| 5+items > area 
 				|| !AttemptInsertion(h,3,2)){
-			if(		(Math.random()<0.5 +(htmls[h].length/1000) - 0.2*area/(W*H) 
-						&& htmls[h].indexOf("<img")==-1 
+			if(		(Math.random()<0.5 +(htmls[h].length/10000) - 2*area/(W*H*items) 
+						&& htmls[h].indexOf("<img src")==-1 
 						&& items!=1) 
 					|| 3+items > area 
 					|| !AttemptInsertion(h,2,2)){
 				var ord = Math.random() > 0.5;		
-				if(		(Math.random()<0.3 +(htmls[h].length/1000) - 0.2*area/(W*H) 
+				if(		(Math.random()<0.3 +(htmls[h].length/10000) - 2*area/(W*items*H) 
 							&& items!=1)
 						|| 1+items > area 
 						|| (ord 
