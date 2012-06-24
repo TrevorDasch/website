@@ -177,7 +177,7 @@ function draw()
 {
 	var now = new Date().getTime();
 	var deltaT = now - lastTime;
-	var lastTime = now;
+	lastTime = now;
 	
 	var tmpt = new Date().getTime()/10000;
 	var r = (.5+Math.sin(tmpt*1.1)*.5)*255>>0;
@@ -211,7 +211,7 @@ gradient.addColorStop(1, mycolortrans);
 		ctx.fill();
 		
 		//Lets use the velocity now
-		p.n+= p.v*deltaT/33;
+		p.n+= Math.floor(p.v*(deltaT/33));
 		
 		p.x = Math.sin(p.n*p.f+p.p)*p.a + p.ix - p.n*0.44*(1+p.wx)+W-200;
 		p.y = Math.sin(p.n*p.f+p.p)*p.a + p.iy -p.n*p.n*0.0005*(1+p.wy) +H-360;
