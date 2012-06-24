@@ -20,6 +20,7 @@ var privateKey;
 var certificate;
 var chain;
 
+var cache = {};
 
 var proto = http;
 if(prod){
@@ -281,11 +282,45 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
                 res.sendfile(__dirname+'/public/about.html');
         });
 
+	app.get('/cache/:host/*',function(req,results){
+		var host = req.params['host'];
+		var path = '/'+req.params[0]+'?';
 
+		for(var q in req.query){
+			path+= q +'='+req.query[q]+'&';
+		}
+
+		
+		var queryurl='https://'+host+path;
+		
+		
+		if(cache[queryurl]){
+			results.send(cache[queryurl].data);
+			return;
+		}
+		
+		https.get({host:host,path:path,port:443},function(res){
+			var str = "";
+			res.on('data', function(data) {
+				str+=data;
+			}).on('end', function() {
+				results.send(str);
+				cache[queryurl] = {date: new Date(), data: str};
+			});
+				
+		}).on('error',function(e){
+			results.send('{"error":"'+e+'", "query":"'+queryurl+'"}',400);
+		});	
+	});
+	
 	app.get('/*',function(req,res){
 		res.contentType(req.params[0]);
 		res.sendfile(__dirname+'/public/'+req.params[0]);	
 	});
+	
+	
+	
+	setInterval(clearCache,1800);
 	
 	if(prod)
 		app.listen(443);
@@ -293,6 +328,15 @@ new mongodb.Db('blogs', server, {}).open(function (error, client) {
 		app.listen(80);
 	
 });
+
+function clearCache(){
+	var now = new Date();
+	for(var c in cache){
+		if(cache[c].date.getTime() + 1800000 < now.getTime())
+			delete cache[c];
+	}
+}
+
 
 function bbReplace(str){
 

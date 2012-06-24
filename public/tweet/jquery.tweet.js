@@ -23,7 +23,7 @@
       loading_text: null,                       // [string]   optional loading text, displayed while tweets load
       refresh_interval: null ,                  // [integer]  optional number of seconds after which to reload tweets
       twitter_url: "twitter.com",               // [string]   custom twitter url, if any (apigee, etc.)
-      twitter_api_url: "api.twitter.com",       // [string]   custom twitter api url, if any (apigee, etc.)
+      twitter_api_url: document.domain+"/cache/api.twitter.com",       // [string]   custom twitter api url, if any (apigee, etc.)
       twitter_search_url: "search.twitter.com", // [string]   custom twitter search url, if any (apigee, etc.)
       template: "{avatar}{time}{join}{text}",   // [string or function] template used to construct each tweet <li> - see code for available vars
       comparator: function(tweet1, tweet2) {    // [function] comparator used to sort tweets (see Array.sort)
@@ -139,7 +139,7 @@
     function build_api_url() {
       var proto = ('https:' == document.location.protocol ? 'https:' : 'http:');
       var count = (s.fetch === null) ? s.count : s.fetch;
-      var common_params = '&include_entities=1&callback=?';
+      var common_params = '&include_entities=1'; //&callback=?';
       if (s.list) {
         return proto+"//"+s.twitter_api_url+"/1/"+s.username[0]+"/lists/"+s.list+"/statuses.json?page="+s.page+"&per_page="+count+common_params;
       } else if (s.favorites) {
@@ -214,7 +214,7 @@
 
       $(widget).bind("tweet:load", function(){
         if (s.loading_text) $(widget).empty().append(loading);
-        $.getJSON(build_api_url(), function(data){
+        $.ajax({url:build_api_url(), dataType: 'json', success:function(data){
           $(widget).empty().append(list);
           if (s.intro_text) list.before(intro);
           list.empty();
@@ -235,7 +235,10 @@
           if (s.refresh_interval) {
             window.setTimeout(function() { $(widget).trigger("tweet:load"); }, 1000 * s.refresh_interval);
           }
-        });
+        },
+        error:function(){
+			AddTweetsToGrid([]);
+		}});
       }).trigger("tweet:load");
     });
   };
