@@ -125,28 +125,36 @@ window.onresize = function(event) {
 
 //Lets create an array of particles
 var particles = [];
-for(var i = 0; i < 150; i++)
+function spawnNewCloud(){
+for(var i = 0; i < 32; i++)
 {
 	//This will add 50 particles to the array with random positions
 	particles.push(new create_particle());
+}
 }
 
 //Lets create a function which will help us to create multiple particles
 function create_particle()
 {
 	//Random position on the canvas
-	this.x = Math.random()*(W-100);
+	this.ix = Math.random()*(50);
+	this.x = this.ix+W-200;
 	this.iy = Math.random()*20 -10;
-	this.y = this.iy+H-400;
+	this.y = this.iy+H-360;
 
 	//Lets add random velocity to each particle	
-	this.v = Math.random()*5+5;
+	this.v = Math.random()*0.25+3;
+	this.n = 0;
+	
 
 	//randomize the frequency, amplitude, and period of each particle
 	this.f = Math.random()/50;
 	this.a = Math.random()*30;
 	this.p = Math.random()*Math.PI*2;
 	
+	//add some wobble
+	this.wx = Math.random()*0.4-0.2;
+	this.wy = Math.random()*0.4-0.2;
 	//Random colors
 	var r = Math.random()*255>>0;
 	var g = Math.random()*255>>0;
@@ -154,7 +162,7 @@ function create_particle()
 	this.color = "rgba("+r+", "+g+", "+b+", 0.5)";
 	
 	//Random size
-	this.radius = Math.random()*20+20;
+	this.radius = Math.random()*30+30;
 }
 
 var x = 100; var y = 100;
@@ -200,18 +208,25 @@ gradient.addColorStop(1, mycolortrans);
 		ctx.fill();
 		
 		//Lets use the velocity now
-		p.x -= p.v;
-		p.y = Math.sin(p.x*p.f+p.p)*p.a + p.iy +H-400;
+		p.n+= p.v;
+		
+		p.x = Math.sin(p.n*p.f+p.p)*p.a + p.ix - p.n*0.44*(1+p.wx)+W-200;
+		p.y = Math.sin(p.n*p.f+p.p)*p.a + p.iy -p.n*p.n*0.0005*(1+p.wy) +H-360;
 		
 		//To prevent the balls from moving out of the canvas
-		if(p.x < -50) p.x = W-150;
+		if(p.x < -50 || p.y < -50 || p.y > H+50){
+			particles.splice(t,1);
+			t--;
+		}
 	}
 	
 
 }
-
+spawnNewCloud();
 
 setInterval(draw, 33);
+
+setInterval(spawnNewCloud, 5000);
 
 		</script>
 
