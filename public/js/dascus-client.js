@@ -4,7 +4,7 @@ var NEW_COMMENT_DIV = ".new_comment";
 
 var APIURL;
 if(document.domain.indexOf('trevordasch.com')!=-1)
-	APIURL = "https://"+document.domain+":3000";
+	APIURL = "https://"+document.domain;
 else
 	APIURL = "http://"+document.domain+":3000";
 

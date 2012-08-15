@@ -15,12 +15,12 @@ html, body {
 
 @font-face {  
   font-family: blackoutMidnight ;  
-  src: url( blackout_midnight-webfont.ttf ) format("truetype");  
+  src: url( font/blackout_midnight-webfont.ttf ) format("truetype");  
 }  
 
 @font-face {  
   font-family: gnuTypewriter ;  
-  src: url( gtw.ttf ) format("truetype");  
+  src: url( font/gtw.ttf ) format("truetype");  
 }
  
 .title { font-family: blackoutMidnight , verdana, helvetica, sans-serif;  
@@ -225,19 +225,28 @@ gradient.addColorStop(1, mycolortrans);
 	
 
 }
-spawnNewCloud();
 
-setInterval(draw, 33);
+function init(){
+	spawnNewCloud();
 
-setInterval(spawnNewCloud, 5000);
+	setInterval(draw, 33);
 
+	setInterval(spawnNewCloud, 5000);
+}
+
+var readyStateCheckInterval = setInterval(function() {
+    if (document.readyState === "complete") {
+        init();
+        clearInterval(readyStateCheckInterval);
+    }
+}, 10);
 		</script>
 
 
 		<h2 class="leadIn">Welcome to the mind of</h2>
 		<h1 class="title">Trevor Dasch</h1>
 		<div class="bottom">
-			<img id="me" width="400px" height="500px" src="me.png"/>
+			<img id="me" width="400px" height="500px" src="img/me.png"/>
 			<div class="nav">
 				<a href="updates" class="updates"><h2>updates</h2></a>
 				<a href="about" class="about"><h2>about</h2></a> 

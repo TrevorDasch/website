@@ -91,7 +91,7 @@ a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
 
 @font-face {  
   font-family: blackoutMidnight ;  
-  src: url( blackout_midnight-webfont.ttf ) format("truetype");  
+  src: url( /font/blackout_midnight-webfont.ttf ) format("truetype");  
 }  
 
 .thegrid{
