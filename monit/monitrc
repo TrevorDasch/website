@@ -1,0 +1,9 @@
+#!monit
+set logfile /var/log/monit.log
+
+check process nodejs with pidfile "/var/run/trevordasch.com.pid"
+    start program = "/sbin/start trevordasch.com"
+    stop program  = "/sbin/stop trevordasch.com"
+    if failed port 443 protocol HTTPS
+	with timeout 10 seconds
+        then restart

@@ -5,7 +5,7 @@ var blogUrl;
 if(document.domain.indexOf('trevordasch.com')!=-1)
 	blogUrl = "https://"+document.domain;
 else
-	blogUrl = "http://"+document.domain;
+	blogUrl = "http://"+document.domain+":3000";
 
 var blogData = [];
 var tweetData = [];
