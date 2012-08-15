@@ -1,0 +1,199 @@
+
+<html>
+	<head>
+		<title>Trevor Dasch</title>
+		<meta name="description" content="Official Website of Trevor Dasch" />
+		<meta name="keywords" content="Trevor,Dasch,GameSpy,Tech,web,software,code,programmer" />
+		<meta name="author" content="Trevor Dasch" />
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+
+		<link href="css/blogs.css" rel="stylesheet" type="text/css"/>
+		<link href="css/identity.css" rel="stylesheet" type="text/css"/>
+		
+		<script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+		<script language="javascript" src="js/identity-client.js" type="text/javascript"></script>
+
+		<script language="javascript" type="text/javascript">
+		
+		
+$(document).ready(function(){
+		
+	CreateHeader('.header');
+	$('.blog-section').show();
+	$('.about_body').hide();
+	$('.resume_link_spot').css({'border-color':"green"});
+		
+	
+	$('.resume_link').click(function(){
+		$('.about_body').hide();
+		$('.resume_body').show();
+		$('.resume_link_spot').css({'border-color':"green"});
+		$('.about_link_spot').css({'border-color':"black"});
+		return false;
+	});
+	
+	$('.about_link').click(function(){
+		$('.about_body').show();
+		$('.resume_body').hide();
+
+		$('.resume_link_spot').css({'border-color':"black"});
+		$('.about_link_spot').css({'border-color':"green"});
+		return false;
+	});
+	
+});		
+		
+		</script>
+		<style type="text/css">
+
+.navbar{
+	clear:both;
+	float:none;
+	width: 100%;
+}
+.navbar table{
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+.navbar td{
+	padding: 0px 10px;
+	width: 50%;
+}
+		
+.resume_link_spot, .about_link_spot{
+	height: 40px;
+	width: 100%;
+	border: 2px solid black;
+	background-color: black;
+}
+
+.resume_link, .about_link{
+	color: white;
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 10px;
+}
+
+
+.resume_link:visited, .resume_link:active, .about_link:visited,  .about_link:active{
+	color: white;
+}
+
+.resume_link:hover,  .about_link:hover{
+	color: green;
+}
+
+		</style>
+	</head><body>
+		<div class="header"></div>
+			
+		<div class="blog-section">
+			<div class="navbar"><table><tr>
+				<td><div class="resume_link_spot"><a href="#" class="resume_link">Resume</a></div></td>
+				<td><div class="about_link_spot"><a href="#" class="about_link">About</a></div></td>
+				</tr></table><div class="cleardiv"></div>
+			</div>
+			<div class="blog">
+				<div class="blog_post">
+										
+					<div class="cleardiv"></div>
+					<div class="about_body">
+						<p>
+							I am a software developer working for GameSpy Technology.
+							I currently reside in San Francisco, California.
+						</p><p>
+							I enjoy playing video games, board games and card games. 
+							I also like watching tv and movies, as well as listening to music.
+							Here are a few of my favorite things:
+						</p>
+						<h3>Books</h3>
+						<p> A Song of Ice and Fire, Ender's Game, The Stand. I read my Kindle on the muni.
+						</p>
+						<h3>Comics</h3><p> Watchmen, Y the Last Man and Scott Pilgrim. Not really into superheroes (except maybe Batman).
+						</p>
+						<h3>Directors</h3><p> Stanley Kubrick, Hayao Miyazaki, Quentin Tarantino, David Lynch, Martin Scorsese, David Fincher, Christopher Nolan, Guy Ritchie.
+						</p>
+						<h3>Movies</h3><p> Indiana Jones, Star Wars (original trilogy), The Matrix, In Bruges, Oldboy, The Terminator, Scott Pilgrim, Army of Darkness, District 9, Moon, Wayne's World, Robocop, The Big Lebowski.
+						</p>
+						<h3>TV Shows</h3><p> Arrested Development, Seinfeld, Firefly, The West Wing, 30 Rock, Archer, Mad Men, Always Sunny in Philadelphia, Lost, Psych, Fullmetal Alchemist, Bleach, Battlestar Galactica, Buffy, Angel, Twin Peaks.
+						</p>
+						<h3>Music</h3>
+						<p> Bob Dylan, Pink Floyd, David Bowie, Led Zeppelin, Black Keys, The Shins, Gorillaz, Cage the Elephant, Metric, Nine Inch Nails, Smashing Pumpkins, Radiohead, Rolling Stones, Pixies, Portishead, Massive Attack, The Beatles. 
+						</p>
+						<h3>Games</h3>
+						<p> Zelda, Bioshock, Metroid Prime, Golden Sun, Halo, Battlefield, Devil May Cry.
+						</p>
+					</div>
+					
+			
+					<div class="resume_body">
+						<h3>Contact Info</h3>
+						<p>
+							<table>
+								<tr><td>Email:</td><td><a href="mailto:me@trevordasch.com">me@trevordasch.com</a></td></tr>
+								<tr><td>LinkedIn:</td><td><a href="http://www.linkedin.com/pub/trevor-dasch/37/137/87a">Trevor Dasch</a></td></tr>
+								<tr><td>Twitter:</td><td><a href="http://twitter.com/TrevorDasch">TrevorDasch</a></td></tr>
+								<tr><td>Github:</td><td><a href="https://github.com/TrevorDasch">TrevorDasch</a></td></tr>
+								<tr><td>Facebook:</td><td><a href="https://facebook.com/TrevorDasch">TrevorDasch</a></td></tr>
+							</table>
+						</p>
+						<h3>Experience</h3>
+						<p>
+							GameSpy Technology    -   Associate Software Developer
+							<br/>
+							Duties: Work on matchmaking and networking services 		for the Unity framework.
+							<br/>September 2011 – Present
+						</p><p>
+
+							University of Dayton   -	Teaching Assistant
+							<br/>
+							Duties: Grade homework and test for Systems Programming and Comparative Languages courses.
+							<br/>September 2010 – May 2011
+						</p><p>
+							JP Morgan Chase &amp; Co.	 -	Intern Analyst
+							<br/>
+							Duties: Execute SIT and UAT testing for the automation of VSI provisioning, and assist in the validation of VM reporting software.	
+							<br/>June 2010 – August 2010
+						</p>
+						<h3>Education</h3><p>
+						University of Dayton, Dayton, OH 42409
+						<br />
+						Bachelor of Science, Magna Cum Laude, May 2011
+						<br />
+						<br />
+						<table>
+							<tr><td>Major:</td><td>Computer Science</td></tr>
+							<tr><td>Minor:</td><td>Mathematics</td></tr>
+							<tr><td>GPA:</td><td>3.88/4.0</td></tr>
+							<tr><td>Major Course Work:&nbsp;&nbsp;&nbsp;&nbsp;</td><td>
+								<br/>Operating Systems
+								<br/>Computer Graphics
+								<br/>Data Structures
+								<br/>User Interface Design
+								<br/>AI
+								<br/>Computer Organization</td></tr>
+							
+						</table>
+						<h3>Activities and Honors</h3>
+						<ul>
+							<li>National Merit Finalist </li><li> National AP Scholar</li>
+							<li>Undergraduate Research in AI</li><li>Film Club</li>
+							<li>National Society for Collegiate Scholars</li>
+							<li>International Collegiate Programming Contest</li>
+							<li>Thomas Schoen Award for Innovative Programming</li>
+						</ul>
+
+						<h3>Computer Skills</h3>
+						<p>Databases: MySQL, CouchDB, MongoDB</p>
+						<p>Frameworks: Node.js, Unity, Scalatra</p>
+						<p>Languages: C, C++, Java, C#, Javascript, Scala, Objective-C, PHP, Lua</p>
+
+						<h3>References Available Upon Request</h3>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

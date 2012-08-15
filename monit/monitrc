@@ -1,0 +1,18 @@
+#!monit
+set logfile /var/log/monit.log
+
+check process nodejs with pidfile "/var/run/trevordasch.com.pid"
+    start program = "/sbin/start trevordasch.com"
+    stop program  = "/sbin/stop trevordasch.com"
+    if failed url https://www.trevordasch.com/monit
+	with timeout 10 seconds
+        then restart
+
+check host mongodb with address localhost
+    start program = "/sbin/mongod --fork --logpath /var/log/mongod.log"
+    stop program = "/usr/bin/pkill -f mongod"
+    if failed port 28017 protocol HTTP
+        request /
+        with timeout 10 seconds
+        then start
+

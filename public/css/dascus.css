@@ -1,0 +1,102 @@
+.new_comment {}
+
+.comment_wrapper{
+	border-top: 2px solid black;
+	background-color: white;
+	margin: 10px;
+	overflow: hidden;
+		  
+}
+
+.comment{ 
+	margin: 10px 0px 0px 0px;
+	padding: 5px 0px 0px 10px;
+	border-top: 1px solid black;
+
+	overflow:hidden;
+}
+
+.comment .comment .comment .comment .comment{
+	margin: 10px 0px 0px 0px;
+	padding: 5px 0px 0px 0px;
+	
+}
+
+.comment-author{
+	font-family: gnuTypewriter, verdana, helvetica, sans-serif; 
+
+	margin: 5px 20px 5px 0px;
+	font-size: /*20px*/1.2em;
+	float: left;
+}
+
+.comment-date{
+	margin: 0px 30px;
+	float: left;
+}
+
+.comment-text{
+	margin: 10px;
+	clear: both;
+}
+
+.reply{
+	margin: 0px 10px;
+	float: right;
+	display: block;
+}
+
+.comment-rating{
+	margin: 0px 10px;
+	font-size: /*14px*/1.1em;
+}
+
+.comment-rating-links{
+	margin: 0px 10px 0px 30px;
+}
+
+.comment-flag{
+	float: right;
+
+	margin: 0px 10px;
+}
+.comment-flag:visited, .comment-flag:active {
+
+}
+.comment-flag:hover {
+
+}
+.comment_header{
+	margin: 10px 10px 0px 10px;
+}
+
+.new_comment{
+	margin: 10px;
+}
+
+.comment_text_area{
+	width: 100%;
+	height: 100px;
+	margin: 10px 0px;
+}
+.comment-edit-links{
+	float:right;
+	margin: 0px 10px;
+}
+
+.comment_pagination{
+	margin: 0px 0px 10px 0px;
+}
+
+.comment_pagination table{
+	margin-left: auto;
+	margin-right:auto;
+}
+
+.commentpage{
+	width: 40px;
+	height: 32px;
+	display: block;
+	text-align: center;
+	padding-top: 12px;
+}
