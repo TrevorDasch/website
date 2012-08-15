@@ -66,11 +66,11 @@ var dascus = require('dascus');
 var identity = require('identity');
 
 
-identity.createServer(proto, app, cryptokey, function(app){
+identity.createServer(proto, app, cryptokey, function(app,ident){
 	
-	blogs.createServer(proto, app, identity.validateUser, function(app){
+	blogs.createServer(proto, app, ident, function(app){
 		
-		dascus.createServer(proto, app, identity.validateUser, identity.updateScore, function(app){
+		dascus.createServer(proto, app, ident, function(app){
 			
 			app.get('/',function(req,res){
 				//console.log("get /");
