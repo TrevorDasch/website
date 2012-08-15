@@ -1,0 +1,105 @@
+@font-face {  
+  font-family: gnuTypewriter ;  
+  src: url( /font/gtw.ttf ) format("truetype");  
+}
+
+.cleardiv{float:none; clear:both;}
+
+
+h1, h2, h3, h4 {
+	font-family: gnuTypewriter, verdana, helvetica, sans-serif; 
+
+}
+
+.header a,.header  a:hover,.header  a:active,.header  a:visited{
+	color: white;
+	font-style: none;
+	text-decoration: none;
+	font-weight: normal;
+	outline: none;
+}
+
+a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
+    outline: none;
+}
+
+input[type=text],textarea,input[type=textfield],input[type=password]{
+
+	background-color: white;
+
+	color: black;
+	border: 1px solid green;
+	padding: 3px;
+}
+
+input[type=button],input[type=submit]{
+	color: white;
+
+	background-color: black;
+	border: 1px solid green;
+	padding: 5px;
+	margin: 0px 10px;
+	float: right;
+}
+
+
+.header a:hover{
+        color: green;
+        font-style: none;
+        text-decoration: none;
+        font-weight: normal;
+        outline: none;
+
+}
+
+.header{
+	position: fixed;
+	top: 0;
+	width: 100%;
+	background-color: black;
+	color: white;
+	z-index: 1;
+}
+
+
+.identity_drop_down{
+	display:none;
+	position: fixed;
+	right: 100px;
+	top: 29px;
+	width: 300px;
+	z-index: 1;
+	background-color: black;
+	padding: 10px;
+	border: 1px solid green;
+}
+
+
+.title{
+	margin-left: 100px;
+	float: left;
+	margin-top: 5px;
+	font-size: 1em;
+	font-weight: normal;
+}
+.identity{
+	float: right;
+	margin-right: 100px;
+	margin-top: 5px;
+}
+
+.login-email, .login-password, .register-email, .register-password, .register-username{
+ float: right;
+}
+
+.formrow{
+	margin-top: 3px;
+	height: 30px;
+}
+
+.logout-link{
+	margin-left: 20px;
+}
+
+
+

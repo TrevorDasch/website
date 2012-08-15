@@ -23,7 +23,7 @@
       loading_text: null,                       // [string]   optional loading text, displayed while tweets load
       refresh_interval: null ,                  // [integer]  optional number of seconds after which to reload tweets
       twitter_url: "twitter.com",               // [string]   custom twitter url, if any (apigee, etc.)
-      twitter_api_url: document.domain+"/cache/api.twitter.com",       // [string]   custom twitter api url, if any (apigee, etc.)
+      twitter_api_url: "api.twitter.com",       // [string]   custom twitter api url, if any (apigee, etc.)
       twitter_search_url: "search.twitter.com", // [string]   custom twitter search url, if any (apigee, etc.)
       template: "{avatar}{time}{join}{text}",   // [string or function] template used to construct each tweet <li> - see code for available vars
       comparator: function(tweet1, tweet2) {    // [function] comparator used to sort tweets (see Array.sort)
@@ -103,23 +103,23 @@
       var delta = parseInt((relative_to.getTime() - date) / 1000, 10);
       var r = '';
       if (delta < 1) {
-        r = 'Just Now';
+        r = 'just now';
       } else if (delta < 60) {
         r = delta + ' seconds ago';
       } else if(delta < 120) {
-        r = '1 minute ago';
+        r = 'a minute ago';
       } else if(delta < (45*60)) {
         r = (parseInt(delta / 60, 10)).toString() + ' minutes ago';
       } else if(delta < (2*60*60)) {
-        r = '1 hour ago';
+        r = 'an hour ago';
       } else if(delta < (24*60*60)) {
         r = '' + (parseInt(delta / 3600, 10)).toString() + ' hours ago';
       } else if(delta < (48*60*60)) {
-        r = '1 day ago';
+        r = 'a day ago';
       } else {
         r = (parseInt(delta / 86400, 10)).toString() + ' days ago';
       }
-      return 'About ' + r;
+      return 'about ' + r;
     }
 
     function build_auto_join_text(text) {
@@ -139,7 +139,7 @@
     function build_api_url() {
       var proto = ('https:' == document.location.protocol ? 'https:' : 'http:');
       var count = (s.fetch === null) ? s.count : s.fetch;
-      var common_params = '&include_entities=1'; //&callback=?';
+      var common_params = '&include_entities=1&callback=?';
       if (s.list) {
         return proto+"//"+s.twitter_api_url+"/1/"+s.username[0]+"/lists/"+s.list+"/statuses.json?page="+s.page+"&per_page="+count+common_params;
       } else if (s.favorites) {
@@ -214,31 +214,24 @@
 
       $(widget).bind("tweet:load", function(){
         if (s.loading_text) $(widget).empty().append(loading);
-        $.ajax({url:build_api_url(), dataType: 'json', success:function(data){
+        $.getJSON(build_api_url(), function(data){
           $(widget).empty().append(list);
           if (s.intro_text) list.before(intro);
           list.empty();
 
           var tweets = $.map(data.results || data, extract_template_data);
           tweets = $.grep(tweets, s.filter).sort(s.comparator).slice(0, s.count);
-          /*
           list.append($.map(tweets, function(o) { return "<li>" + t(s.template, o) + "</li>"; }).join('')).
               children('li:first').addClass('tweet_first').end().
               children('li:odd').addClass('tweet_even').end().
               children('li:even').addClass('tweet_odd');
-		  */
-		  
-		  AddTweetsToGrid(tweets);
 
           if (s.outro_text) list.after(outro);
           $(widget).trigger("loaded").trigger((tweets.length === 0 ? "empty" : "full"));
           if (s.refresh_interval) {
             window.setTimeout(function() { $(widget).trigger("tweet:load"); }, 1000 * s.refresh_interval);
           }
-        },
-        error:function(){
-			AddTweetsToGrid([]);
-		}});
+        });
       }).trigger("tweet:load");
     });
   };

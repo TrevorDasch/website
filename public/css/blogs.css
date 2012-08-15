@@ -1,0 +1,298 @@
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0px;
+  font-family: verdana, helvetica, sans-serif; 
+
+  background-color: gray;
+	background-image:
+		-webkit-gradient(linear, left top, right bottom,
+			from(transparent),
+			color-stop(0.02, transparent),
+			color-stop(0.02,white),
+	
+			color-stop(0.48, white),
+			color-stop(0.48, transparent),
+			color-stop(0.52, transparent),
+			color-stop(0.52,white),
+
+			color-stop(0.98, white),
+			color-stop(0.98, transparent),			
+			to(transparent));
+	ffbackground-color: gray;
+	-webkit-background-size: 10px 10px;
+
+  
+}
+
+h1, h2, h3, h4{
+	padding: 0;
+	margin: 0;
+}
+
+a, a:hover, a:active, a:visited{
+	color: black;
+	font-style: none;
+	text-decoration: none;
+	font-weight: normal;
+	outline: none;
+}
+
+.blog_triangle{
+	width:0px;
+	height:0px;
+	position: absolute;
+	border-top: 16px solid green;
+	border-left: 16px solid green;
+	border-bottom: 16px solid transparent;
+	border-right: 16px solid transparent;
+}
+
+.blog_icon{
+	position: absolute;
+	top: -14px;
+	left: -14px;
+	width: 16px;
+	height: 16px;
+}
+
+.twitter_triangle{
+	width:0px;
+	height:0px;
+	position: absolute;
+	border-top: 16px solid #00aced;
+	border-left: 16px solid #00aced;
+	border-bottom: 16px solid transparent;
+	border-right: 16px solid transparent;	
+}
+
+.twitter_icon{
+	position: absolute;
+	top: -14px;
+	left: -14px;
+	width: 16px;
+	height: 16px;
+}
+
+
+a:hover{
+        color: green;
+        font-style: none;
+        text-decoration: none;
+        font-weight: normal;
+        outline: none;
+
+}
+
+a.bef-toggle:link, a.bef-toggle:visited, a.bef-toggle:active {
+    outline: none;
+}
+
+
+@font-face {  
+  font-family: blackoutMidnight ;  
+  src: url( /font/blackout_midnight-webfont.ttf ) format("truetype");  
+}  
+
+.thegrid{
+	padding-top: 50px;
+	margin: 0 auto;
+	position: absolute;
+}
+.grid_item{
+	margin:5px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	text-overflow:ellipsis;
+}
+
+.mini_blog_post, .mini_tweet{
+	position: absolute;
+	display: block;
+	margin: 16px 10px 10px 16px;
+	bottom: 0;
+	top: 0;
+	left: 0; 
+	right: 0;
+	overflow: hidden;
+	text-overflow:ellipsis;	
+}
+
+
+.mini_blog_post img, .mini_tweet img{
+	display: block;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+.tweet_time, .mini_blog_date{ display: block;
+	
+}
+
+.grid-h-3{
+	height:620px;
+	font-size: 2.5em;
+}
+
+.grid-h-2{
+	height:410px;
+	font-size: 1.5em;
+}
+
+.grid-h-1{
+	height:200px;
+}
+
+.grid-w-3{
+	width:620px;
+	font-size: 2.5em;
+}
+
+.grid-w-2{
+	width:410px;
+	font-size: 1.5em;
+}
+
+.grid-w-2.grid-h-2{
+	font-size: 2em;
+}
+
+
+.grid-w-1{
+	width:200px;
+}
+
+.more_link_bar{
+	height: 40px;
+	margin: 10px;
+	border: 1px solid black;
+	background-color: black;
+}
+
+.more_link{
+	color: white;
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 10px;
+}
+
+.return_to_grid_link_spot{
+	height: 40px;
+	margin: 10px;
+	border: 1px solid black;
+	background-color: black;
+}
+
+.return_to_grid_link{
+	color: white;
+	display: block;
+	width: 100%;
+	text-align: center;
+	padding: 10px;
+}
+
+.more_link:visited, .more_link:active{
+	color: white;
+}
+
+.more_link:hover{
+	color: green;
+}
+
+.return_to_grid_link:visited, .return_to_grid_link:active{
+	color: white;
+}
+
+.return_to_grid_link:hover{
+	color: green;
+}
+
+.blog-section{
+	margin-top: 38px;
+	display: none;
+}
+
+.new_blog_link, .new_blog_link:active, .new_blog_link:visited{
+	color: white;
+	background-color: black;
+	padding: 10px;
+	
+	text-align: center;
+}
+
+.blog{
+	margin: 10px 10px 10px 10px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+}
+
+
+.blog_post{
+	padding: 10px;
+}
+
+.blog_title{
+	padding: 1px 15px 0px 15px;
+	float: left;
+	clear: right;
+}
+
+.blog_date{
+	margin:10px;
+}
+
+.blog_title_field{
+	display: block;
+	height: 40;
+	width: 100%;
+	font-size: /*26px*/1.7em;
+	padding: 10px;
+}
+
+.blog_body_area{
+	display: block;
+	width: 100%;
+	height: 520px;
+	padding: 10px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+
+.warning_text{
+	color: red;
+	margin: 10px 0px 10px 0px;
+	display: block;
+	font-size: /*14px*/1.1em;
+}
+
+.blog_warning .warning_text{
+	margin: 20px 0px 0px 20px;
+
+}
+
+.new_blog_post, .edit_blog_post {
+	padding: 10px;
+}
+
+
+.new_blog_link{
+	margin: 10px;
+	display: block;
+}
+
+.edit_blog_link{
+	margin: 10px;
+	display:block;
+	float: right;
+}
+
+
+iframe{
+	border: 0px;
+	margin: 10px;
+}
+
