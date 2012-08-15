@@ -225,12 +225,21 @@ gradient.addColorStop(1, mycolortrans);
 	
 
 }
-spawnNewCloud();
 
-setInterval(draw, 33);
+function init(){
+	spawnNewCloud();
 
-setInterval(spawnNewCloud, 5000);
+	setInterval(draw, 33);
 
+	setInterval(spawnNewCloud, 5000);
+}
+
+var readyStateCheckInterval = setInterval(function() {
+    if (document.readyState === "complete") {
+        init();
+        clearInterval(readyStateCheckInterval);
+    }
+}, 10);
 		</script>
 
 

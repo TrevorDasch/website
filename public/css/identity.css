@@ -1,6 +1,6 @@
 @font-face {  
   font-family: gnuTypewriter ;  
-  src: url( font/gtw.ttf ) format("truetype");  
+  src: url( /font/gtw.ttf ) format("truetype");  
 }
 
 .cleardiv{float:none; clear:both;}
