@@ -204,7 +204,7 @@ function draw()
 		gradient.addColorStop(0, mycolor);
 		
 		gradient.addColorStop(0.2, mycolor);
-gradient.addColorStop(1, mycolortrans);
+    gradient.addColorStop(1, mycolortrans);
 		
 		ctx.fillStyle = gradient;
 		ctx.arc(p.x, p.y, p.radius, Math.PI*2, false);
@@ -236,7 +236,7 @@ function init(){
 
 var readyStateCheckInterval = setInterval(function() {
     if (document.readyState === "complete") {
-        init();
+        //init();
         clearInterval(readyStateCheckInterval);
     }
 }, 10);

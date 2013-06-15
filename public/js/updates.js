@@ -9,7 +9,7 @@ $(document).ready(function(){
 	loadSection();
 		
 	
-	CreateHeader('.header');
+	//CreateHeader('.header');
 	
 	
 	CreateGrid('.thegrid');
