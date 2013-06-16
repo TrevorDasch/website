@@ -14,6 +14,9 @@ var mongodb = require('mongodb');
 var mime = require('mime');
 
 var fs = require('fs');
+var path = require('path');
+
+var crypto = require('crypto');
 
 var privateKey;
 var certificate;
@@ -38,13 +41,10 @@ if(prod){
 */
 
 
-var app;
-if(prod)
-	app = express.createServer({key:privateKey, cert:certificate, ca: chain});
-else 
-	app =express.createServer();
+var app =express();
 	
 app.use(express.bodyParser());
+//app.use(express.static(__dirname + '/public'));
 
 app.all("/*", function(req,res,next){
 	var origin = req.header("Origin");
@@ -75,7 +75,7 @@ identity.createServer(proto, app, cryptokey, function(app,ident){
 			app.get('/',function(req,res){
 				//console.log("get /");
 				res.contentType("text/html");
-				res.sendfile(__dirname+'/public/new_index.html');
+				res.sendfile(__dirname+'/public/index.html');
 			});
 
 
@@ -86,7 +86,7 @@ identity.createServer(proto, app, cryptokey, function(app,ident){
 				
         var filepath = __dirname+'/public/'+n;
           
-        fs.exists(filepath, function(exists){
+        path.exists(filepath, function(exists){
                     
           if(!exists){
             res.contentType("text/html");
@@ -96,13 +96,20 @@ identity.createServer(proto, app, cryptokey, function(app,ident){
           
           res.contentType(mime.lookup(filepath));
           
-           var readStream = fs.createReadStream(filepath);
-          readStream.pipe(res);
+	  fs.readFile(filepath, function (err,data) {
+  	    if (err) {
+              res.redirect('404');
+	    }
+            res.send(data);
+          });
+
         });
-			});
+});
 			
-			if(prod)
-				app.listen(443);
+
+			if(prod){
+        			https.createServer({key:privateKey, cert:certificate, ca: chain},app).listen(443);
+			}
 			else
 				app.listen(3000);
 			
