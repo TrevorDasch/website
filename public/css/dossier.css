@@ -38,6 +38,7 @@ body{
 }
 
 .main{
+  position: relative;
   width:1000px;
   margin: 0 auto;
 }
@@ -113,7 +114,7 @@ body{
   -webkit-transform: rotate(90deg); 
   -moz-transform: rotate(90deg);	
   position: absolute;
-  left: 799px;
+  left: 486px;
   width: 1000px;
   margin-top: 600px;
   top: 0;
