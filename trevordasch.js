@@ -11,9 +11,12 @@ var http = require('http');
 var https = require('https');
 var express = require('express');
 var mongodb = require('mongodb');
-
+var mime = require('mime');
 
 var fs = require('fs');
+var path = require('path');
+
+var crypto = require('crypto');
 
 var privateKey;
 var certificate;
@@ -38,13 +41,10 @@ if(prod){
 */
 
 
-var app;
-if(prod)
-	app = express.createServer({key:privateKey, cert:certificate, ca: chain});
-else 
-	app =express.createServer();
+var app =express();
 	
 app.use(express.bodyParser());
+//app.use(express.static(__dirname + '/public'));
 
 app.all("/*", function(req,res,next){
 	var origin = req.header("Origin");
@@ -74,33 +74,42 @@ identity.createServer(proto, app, cryptokey, function(app,ident){
 			
 			app.get('/',function(req,res){
 				//console.log("get /");
-				res.contentType("index.html");
+				res.contentType("text/html");
 				res.sendfile(__dirname+'/public/index.html');
-			});
-
-			app.get('/updates',function(req,res){
-				res.contentType("updates.html");
-				res.sendfile(__dirname+'/public/updates.html');
-			});
-
-			app.get('/about',function(req,res){
-				res.contentType("about.html");
-				res.sendfile(__dirname+'/public/about.html');
-			});
-
-			app.get('/minesweeper', function(req,res){
-				res.contentType("minesweeper.html");
-				res.sendfile(__dirname+'/public/minesweeper.html');
 			});
 
 
 			app.get('/*',function(req,res){
-				res.contentType(req.params[0]);
-				res.sendfile(__dirname+'/public/'+req.params[0]);	
-			});
+        var n = req.params[0];
+        if(n.indexOf('.')==-1)
+          n = n+'.html';
+				
+        var filepath = __dirname+'/public/'+n;
+          
+        path.exists(filepath, function(exists){
+                    
+          if(!exists){
+            res.contentType("text/html");
+            res.sendfile(__dirname+'/public/404.html',404);
+            return;
+          }
+          
+          res.contentType(mime.lookup(filepath));
+          
+	  fs.readFile(filepath, function (err,data) {
+  	    if (err) {
+              res.redirect('404');
+	    }
+            res.send(data);
+          });
+
+        });
+});
 			
-			if(prod)
-				app.listen(443);
+
+			if(prod){
+        			https.createServer({key:privateKey, cert:certificate, ca: chain},app).listen(443);
+			}
 			else
 				app.listen(3000);
 			
